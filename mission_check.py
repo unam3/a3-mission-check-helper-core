@@ -8,36 +8,29 @@ import re
 with open('/home/yay/a3/wog_96_the_forgotten_war_latest.lingor3/mission.sqm') as opened_mission_file:
     #print opened_mission_file
 
-    mission_class_marker = str('class Mission')
-
-    #print mission_class_marker
-
     class_path = []
 
-    loop_into_mission_class = False
-
     for line in opened_mission_file:
-        if (line.startswith(mission_class_marker)):
-            loop_into_mission_class = True
+        #print line
+        #print len(class_path), class_path
 
-        if (loop_into_mission_class):
-            #print line
+        if (re.match('\s*class ', line) and not line.endswith('{};\r\n')):
+            class_name = line.split('class ')[1][:-2]
 
-            if (re.match('\s*class', line) and not line.endswith('{};\r\n')):
-                class_name = line.split('class ')[1][:-2]
+            class_path.append(class_name)
 
-                class_path.append(class_name)
+            #print 'classname is', class_name
 
-                #print 'classname is', class_name
+            #print class_path
 
-                #print class_path
+        elif (re.match('\s*};', line)):
+            class_path.pop()
 
-            elif (re.match('\s*};', line)):
-                class_path.pop()
+            #print class_path
 
-                #print class_path
+        elif (len(class_path) and class_path[0] == str('Mission')):
+            if (class_name == 'Intel'):
 
-            elif (class_name == 'Intel'):
                 splitted_attribute_definition = line.strip().decode('utf-8').split(' = ')
 
                 #print splitted_attribute_definition
@@ -49,6 +42,8 @@ with open('/home/yay/a3/wog_96_the_forgotten_war_latest.lingor3/mission.sqm') as
                     stripped_attr_value = attr_value[1:-2]
 
                     if (attr_name == 'briefingName'):
+                        #print attr_value
+
                         # 2
                         if (not re.match('WOG \d{2,3} (\w+\ )+\d\.\d$', stripped_attr_value, re.UNICODE)):
                             print 'Название миссии не удовлетворяет шаблону.'.encode('utf-8')
