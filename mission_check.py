@@ -37,9 +37,17 @@ with open('/home/yay/a3/wog_96_the_forgotten_war_latest.lingor3/mission.sqm') as
                 # in the mission file strings strings are in quotes, ends with semi
                 stripped_attr_value = attr_value[1:-2]
 
+                stripped_semi_attr_value = attr_value[:-1]
+
                 if (class_path[0] == str('ScenarioData')):
                     if (attr_name == 'author'):
-                        print stripped_attr_value
+                        print 'Автор миссии:', stripped_attr_value
+
+                    if (attr_name == 'saving' and stripped_semi_attr_value != '0'):
+                        print 'Сохранение должно быть выключено.'.encode('utf-8')
+
+                    #if (attr_name == 'respawn' and not stripped_semi_attr_value == '0'):
+                    #    print 'Сохранение должно быть выключено.'.encode('utf-8')
 
                 elif (class_path[0] == str('Mission')):
                     if (class_name == 'Intel'):
