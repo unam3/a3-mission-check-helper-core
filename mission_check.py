@@ -50,13 +50,13 @@ with open('/home/yay/a3/wog_96_the_forgotten_war_latest.lingor3/mission.sqm') as
 
                     if (attr_name == 'briefingName'):
                         # 2
-                        #if (not re.match('WOG \d{2,3} (\s|\w)*$', attr_value)):
-                        #    print 'Название миссии не удовлетворяет шаблону.'.encode('utf-8')
+                        if (not re.match('WOG \d{2,3} (\w+\ )+\d\.\d$', stripped_attr_value, re.UNICODE)):
+                            print 'Название миссии не удовлетворяет шаблону.'.encode('utf-8')
 
                         # 2.1
-                        if (not stripped_attr_value.startswith('WOG ')):
-                            #print ('Название миссии должно начинаться с "WOG".'.encode('utf-8')
-                            print ('Название миссии должно начинаться с "WOG". (%s)' % (stripped_attr_value)).encode('utf-8'),
+                        #if (not stripped_attr_value.startswith('WOG ')):
+                        #    #print ('Название миссии должно начинаться с "WOG".'.encode('utf-8')
+                        #    print ('Название миссии должно начинаться с "WOG". (%s)' % (stripped_attr_value)).encode('utf-8'),
 
                         #if (attr_value.decode('utf-8').split(' ')):
                             
