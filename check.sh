@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # to test script run:
-#rm -rf ~/a3/c/ && . ~/a3/check.sh ~/a3/c.pbo
+#rm -rf ~/a3/wog_some/ && . ~/a3/check.sh ~/a3/wog_some.pbo
 
 # $1 is first argument to this script as in example above
 
@@ -16,15 +16,22 @@ if [[ $extractpbo_msg_last_line != "No Error(s)" ]];
         # get the folder name from .pbo filename
         mission_folder=`sed s/\.pbo$// <<< $1`;
 
-        echo $mission_folder;
+        #echo $mission_folder;
+
+        mission_sqm=$mission_folder/mission.sqm
 
         # check if mission.sqm was binarize
-        #head -n 2 ~/a3/wog_96_the_forgotten_war_latest.lingor3/mission.sqm | grep "^//DeRap: wog_"
+        # get the second line and search RE in it
+        mission_was_deraped=`head -n 2 $mission_sqm | grep "^//DeRap: wog_"`
+
+        if [[ -z $mission_was_deraped ]];
+            then echo "mission.sqm wasn't binarized!";
+            
+            else python2 mission_check.py;
+        fi
     }
 fi
 
-
-#python2 mission_check.py
-
+# TODO: check size of the images
 # filesize in KB
 #ls -kl loadscreen.jpg |cut -d ' ' -f 5
