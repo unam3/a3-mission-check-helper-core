@@ -3,9 +3,11 @@
 
 from __future__ import unicode_literals
 
-import re
+import re, sys
 
-with open('/home/yay/a3/wog_96_the_forgotten_war_latest.lingor3/mission.sqm') as opened_mission_file:
+path_to_mission_sqm = sys.argv[1]
+
+with open(path_to_mission_sqm) as opened_mission_file:
     #print opened_mission_file
 
     class_path = []

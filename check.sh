@@ -50,7 +50,7 @@ function check_pbo {
         }
     fi
     
-    python2 mission_check.py;
+    python2 mission_check.py $mission_sqm;
 }
 
 # call our function
