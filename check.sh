@@ -16,7 +16,7 @@ function check_pbo {
     filename_check=`sed -n -E '/^wog_[0-9]{2,3}_[a-z0-9_]+_[0-9]{2}\.[A-Za-z0-9_]+\.pbo$/p' <<< $filename`
 
     if [[ -z $filename_check ]];
-        then echo 'wrong mission filename.';
+        then echo 'wrong mission file name.';
 
         return;
     fi
