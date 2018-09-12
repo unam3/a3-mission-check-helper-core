@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # to test script run:
+#. ~/a3/check.sh
+
 #rm -rf ~/a3/wog_156_voshod_10.Takistan.pbo/ && . ~/a3/check.sh ~/a3/wog_156_voshod_10.Takistan.pbo
 
 # $1 is first argument to this script as in example above
@@ -56,15 +58,34 @@ function check_pbo {
 function run_tests {
     echo 'starting tests'
 
-    test_filenames=( "wog_156_voshod_10.Takistan.pbo" "og_156_voshod_10.Takistan.pbo" )
+    # "to_test
+    test_filenames=(
+        "pluh"
+        "Takistan.pbo"
+        "og_156_voshod.10.Takistan.pbo"
+        "og_156_voshod_10.Tak.istan.pbo"
+        "og_6_voshod_10.Tak.istan.pbo"
+        "og_156_voshod_10.Takistan.pbo"
+    )
 
-    #echo ${test_filenames[0]} ${test_filenames[1]}
+    i=0;
 
-    for test_filename in $test_filenames; do {
-        echo $test_filename;
+    while [[ -n ${test_filenames[i]} ]]
+    do {
+        test_results=`check_pbo ${test_filenames[i]};`
 
-        #check_pbo $test_filename;
-    } ; done
+        test_failed_result="wrong mission file name: ${test_filenames[i]}"
+
+        #echo $test_results
+        #echo $test_failed_result
+
+        if [ test_results == test_failed_result ]
+        then
+            echo 'test' $i $test_failed_result
+        fi
+
+        i=$(($i+1))
+    } done
 }
 
 # if first param is not set

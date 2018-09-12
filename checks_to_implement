@@ -2,7 +2,7 @@ i — checks are implemented
 t — has tests
 
 i t title
-+   1. pbo filename check
++ + 1. pbo filename check
 +   2.1 mission name
 +   2.2.1 main attr: name, author
     2.2.1 main attr: images
