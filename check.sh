@@ -16,7 +16,7 @@ function check_pbo {
     filename_check=`sed -n -E '/^wog_[0-9]{2,3}_[a-z0-9_]+_[0-9]{2}\.[A-Za-z0-9_]+\.pbo$/p' <<< $filename`
 
     if [[ -z $filename_check ]];
-        then echo 'wrong mission file name.';
+        then echo "wrong mission file name: $filename";
 
         return;
     fi
@@ -53,8 +53,25 @@ function check_pbo {
     python2 mission_check.py $mission_sqm;
 }
 
-# call our function
-check_pbo $1
+function run_tests {
+    echo 'starting tests'
+
+    test_filenames=( "wog_156_voshod_10.Takistan.pbo" "og_156_voshod_10.Takistan.pbo" )
+
+    #echo ${test_filenames[0]} ${test_filenames[1]}
+
+    for test_filename in $test_filenames; do {
+        echo $test_filename;
+
+        #check_pbo $test_filename;
+    } ; done
+}
+
+# if first param is not set
+if [[ -z $1 ]];
+    then run_tests;
+    else check_pbo $1;
+fi
 
 # TODO: check size of the images
 # filesize in KB
