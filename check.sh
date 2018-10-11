@@ -58,7 +58,7 @@ function check_pbo {
 function run_tests {
     echo 'starting tests'
 
-    # "to_test
+    # all filenames is wrong
     test_filenames=(
         "pluh"
         "Takistan.pbo"
@@ -70,22 +70,32 @@ function run_tests {
 
     i=0;
 
-    while [[ -n ${test_filenames[i]} ]]
+    file_name_test_failed=false
+
+    while [[ -n ${test_filenames[i]} ]] && ! $file_name_test_failed
     do {
         test_results=`check_pbo ${test_filenames[i]};`
 
-        test_failed_result="wrong mission file name: ${test_filenames[i]}"
-
-        #echo $test_results
-        #echo $test_failed_result
-
-        if [ test_results == test_failed_result ]
+        reference_test_failed_result="wrong mission file name: ${test_filenames[i]}";
+    
+        if [[ $test_results = $reference_test_failed_result ]]
         then
-            echo 'test' $i $test_failed_result
-        fi
+            echo 'test' $i 'is ok:' $test_results;
+        else {
+            file_name_test_failed=true;
 
-        i=$(($i+1))
+            echo 'test' $i 'is failed'; #$test_results;
+        } fi;
+
+        i=$(($i+1));
     } done
+
+    if $file_name_test_failed;
+    then
+        echo 'pbo filename test failed';
+    else
+        echo 'pbo filename test passed';
+    fi;
 }
 
 # if first param is not set
