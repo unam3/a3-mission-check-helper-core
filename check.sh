@@ -53,6 +53,15 @@ function check_pbo {
     fi
     
     python2 mission_check.py $mission_sqm;
+
+
+    description_file_path=$mission_folder/Description.ext;
+
+    if [[ -a $description_file_path ]];
+        then {
+            echo "mission has Description.ext!";
+        }
+    fi    
 }
 
 function run_tests {

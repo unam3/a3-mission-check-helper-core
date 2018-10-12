@@ -74,6 +74,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
                             print 'Please turn on "Enable Target Debugging"'
 
                 elif (class_path[0] == str('Mission')):
+
                     if (class_name == 'Intel'):
                         #print splitted_attribute_definition
                         
@@ -97,12 +98,11 @@ with open(path_to_mission_sqm) as opened_mission_file:
                             elif (attr_name == 'overviewText'):
                                 print stripped_attr_value.encode('utf-8')
 
-                            elif ((attr_name == 'startWind' or attr_name == 'forecastWind') and float(stripped_semi_attr_value) > 0.4):
+                            elif ((attr_name == 'startWind' or attr_name == 'forecastWind')
+                                and float(stripped_semi_attr_value) > 0.4):
+
                                 print 'Wind must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
 
-                            elif ((attr_name == 'startWind' or attr_name == 'forecastWind') and float(stripped_semi_attr_value) > 0.4):
-                                print 'Wind must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
-
-                            elif ((attr_name == 'startRain' or attr_name == 'forecastRain') and float(stripped_semi_attr_value) > 0.4):
+                            elif ((attr_name == 'startRain' or attr_name == 'forecastRain')
+                                and float(stripped_semi_attr_value) > 0.4):
                                 print 'Rain must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
-
