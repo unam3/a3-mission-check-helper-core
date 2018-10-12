@@ -3,7 +3,7 @@
 # to test script run:
 #. ~/a3/check.sh
 
-#rm -rf ~/a3/wog_156_voshod_10.Takistan.pbo/ && . ~/a3/check.sh ~/a3/wog_156_voshod_10.Takistan.pbo
+#rm -rf ~/a3/wog_54_retranslyator_14.Sara_dbe1 && . ~/a3/check.sh ~/a3/wog_54_retranslyator_14.Sara_dbe1.pbo
 
 # $1 is first argument to this script as in example above
 

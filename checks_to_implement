@@ -5,14 +5,15 @@ i t title
 + + 1. pbo filename check
 +   2.1 mission name
 +   2.2.1 main attr: name, author
-    2.2.1 main attr: images
-    2.2.2 main attr. state
+±   2.2.1 main attr: images
+±   2.2.2 main attr. state
+        - how to check default values: they are not present in the file?
 +   2.2.3 file binarization
-    2.3.1 wind, rain intensity
++   2.3.1 wind, rain intensity
     2.3.2 fog on cup maps. put warning
     2.4.1 MP. Type
     2.4.2 MP. Lobby. Name, allow AI checks
-    2.4.3 MP. Respawn
++   2.4.3 MP. Respawn
     2.4.4 MP. Tasks
     2.5 Description.ext. put warning
     4.1 Slots. 190 and less.
