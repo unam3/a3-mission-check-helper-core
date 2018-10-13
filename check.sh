@@ -4,6 +4,8 @@
 #. ~/a3/check.sh
 
 #rm -rf ~/a3/wog_54_retranslyator_14.Sara_dbe1 && . ~/a3/check.sh ~/a3/wog_54_retranslyator_14.Sara_dbe1.pbo
+#rm -rf ~/a3/wog_100_nastuplenie_10.ruha && . ~/a3/check.sh ~/a3/wog_100_nastuplenie_10.ruha.pbo
+#rm -rf ~/a3/wog_89_the_boar_that_stuck_10.fallujah && . ~/a3/check.sh ~/a3/wog_89_the_boar_that_stuck_10.fallujah.pbo
 
 # $1 is first argument to this script as in example above
 
@@ -52,7 +54,8 @@ function check_pbo {
         }
     fi
     
-    python2 mission_check.py $mission_sqm;
+    # for working pipes
+    PYTHONIOENCODING=UTF-8 python2 mission_check.py $mission_sqm;
 
 
     description_file_path=$mission_folder/Description.ext;
