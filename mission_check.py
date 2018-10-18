@@ -10,9 +10,11 @@ path_to_mission_sqm = sys.argv[1]
 with open(path_to_mission_sqm) as opened_mission_file:
     #print opened_mission_file
 
+    sides = {}
+
     class_path = []
 
-    has_group_class_ancestor = False
+    in_group_class = False
 
     group_side = False
 
@@ -40,13 +42,13 @@ with open(path_to_mission_sqm) as opened_mission_file:
             #print class_path
 
         elif (re.match('\s*};', line)):
-            if (has_group_class_ancestor and len(class_path) == 3):
+            if (in_group_class and len(class_path) == 3):
 
-                has_group_class_ancestor = False
+                in_group_class = False
 
                 group_side = False
 
-            if (in_unit_class and not (has_group_class_ancestor and len(class_path) >= 5)):
+            if (in_unit_class and not (in_group_class and len(class_path) >= 5)):
 
                 in_unit_class = False
 
@@ -149,16 +151,29 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                             if (attr_name == 'dataType' and stripped_attr_value == 'Group'):
 
-                                has_group_class_ancestor = True
+                                in_group_class = True
 
-                            elif (attr_name == 'side'):
+                            elif (attr_name == 'side' and not (stripped_attr_value == 'West'
+                                or stripped_attr_value == 'East' or stripped_attr_value == 'Independent')):
 
                                 group_side = stripped_attr_value
 
-                        elif (not in_unit_class and has_group_class_ancestor):
+                                if (not sides.get(group_side)):
+                                    sides[group_side] = []
+
+                                # add empty list for the group units
+                                sides[group_side].append([])
+
+                                print 'new group'
+
+                        # last part for additional filtering
+                        elif (not in_unit_class and in_group_class and group_side):
                             # Mission → Entities → ItemN /w dataType == 'Group' → Entities → ItemN
                             if (len(class_path) == 5 and attr_name == 'dataType'
                                 and stripped_attr_value == 'Object'):
+
+                                # add empty unit dict to the last group units list
+                                sides[group_side][-1].append({})
 
                                 in_unit_class = True
 
@@ -178,23 +193,25 @@ with open(path_to_mission_sqm) as opened_mission_file:
                         
                         elif (in_unit_class):
 
-                            # attr_name == 'isPlayable' # for slots count
-
                             # parse "side" property too. just in case
 
-                            #if (attr_name == 'init' or attr_name == 'description'):
+                            if (attr_name == 'init' or attr_name == 'description' or attr_name == 'type'):
 
-                            #    print stripped_attr_value
+                                #print stripped_attr_value
 
-                            #elif (attr_name == 'type'):
-                            #    print stripped_attr_value
+                                sides[group_side][-1][-1][attr_name] = stripped_attr_value
+                            
+                            # isPlayable propert present only if slot is playable 
+                            elif (attr_name == 'isPlayable' and stripped_semi_attr_value != '1'):
+
+                                print 'slot is not playable!'
 
                             #print class_path
 
                             #print line
 
                             # Mission - Entities - ItemN /w dataType = "Group" - Entities - ItemN - CustomAttributes
-                            if (len(class_path) == 7 and class_path[5] == 'CustomAttributes'
+                            elif (len(class_path) == 7 and class_path[5] == 'CustomAttributes'
                                 and attr_name == 'property'):
 
                                 if (stripped_attr_value == 'ace_isMedic'):
@@ -209,15 +226,22 @@ with open(path_to_mission_sqm) as opened_mission_file:
                                 and class_path[8] == 'data'):
 
                                 #print class_path, len(class_path)
-                                print 'ace_isMedic', stripped_semi_attr_value
+
+                                #print 'ace_isMedic', stripped_semi_attr_value
+                                
+                                sides[group_side][-1][-1]['ace_isMedic'] = stripped_semi_attr_value
 
                             elif (in_unit_custom_attrs_engineer and len(class_path) == 9 and class_path[7] == 'Value'
                                 and class_path[8] == 'data'):
 
-                                print 'ace_isEngineer', stripped_semi_attr_value
+                                #print 'ace_isEngineer', stripped_semi_attr_value
+
+                                sides[group_side][-1][-1]['ace_isEngineer'] = stripped_semi_attr_value
 
                             #print class_path
                             #print line
 
                         #if (len(class_path) == 7 and class_path[3] == 'CustomAttributes'
                         #    and class_path[5] == 'Value' and class_path[6] == 'data' and attr_name == 'value'):
+
+    print sides

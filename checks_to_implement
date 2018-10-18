@@ -17,6 +17,7 @@ i t title
     2.4.4 MP. Tasks
 +   2.5 Description.ext. put warning
     4.1 Slots. 190 and less.
+        check out Porto Muerte rhib guys
     4.6 Slots. medic is required. check if any
     4.8 Slots. any sloty must be playable
     4.9 Slots. disabling special states check. (lowest priority)
@@ -25,6 +26,7 @@ i t title
     5.3 Vehicles and equipment. (partly) show rhs units, that doesn't require equipment
     5.4 Vehicles and equipment. equipment edit in unit/vehicle attributes
     5.5 Vehicles and equipment. check equipment scripts location, show it
+        print object init
     5.6 Vehicles and equipment. check equipment scripts name. words, digits, underscore is allowed
     5.7 Vehicles and equipment. check equipment storages overflow
     5.11 Vehicles and equipment. check squads name change
