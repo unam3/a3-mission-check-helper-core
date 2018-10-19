@@ -173,8 +173,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
                                 if (not sides.get(group_side)):
                                     sides[group_side] = []
 
-                                # add empty list for the group units
-                                sides[group_side].append([])
+                                sides[group_side].append({'units': []})
 
                                 #print 'new group', group_side
 
@@ -184,9 +183,9 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                         elif (not in_unit_class and in_group_class and group_side):
 
-                            print class_path
+                            #print class_path
 
-                            print line
+                            #print line
 
                             # Mission → Entities → ItemN /w dataType == 'Group' → Entities → ItemN
                             if (len(class_path) == 5 and attr_name == 'dataType' and stripped_attr_value == 'Object'):
@@ -194,7 +193,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
                                 # add empty unit dict to the last group units list
                                 #print sides[group_side][-1]
 
-                                sides[group_side][-1].append({})
+                                sides[group_side][-1]['units'].append({})
 
                                 #print sides[group_side][-1], '---'
 
@@ -213,7 +212,9 @@ with open(path_to_mission_sqm) as opened_mission_file:
                             #   AttributeN /w property == "groupID" - Value - data - 'value' property
                             elif (in_group_custom_attr_group_id and len(class_path) == 7 and attr_name == 'value'):
 
-                                print 'l\n', line, '\nl'
+                                #print 'l\n', line, '\nl'
+
+                                sides[group_side][-1]['groupID'] = stripped_attr_value
                         
                         elif (in_unit_class):
 
@@ -223,18 +224,18 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                                 #print stripped_attr_value
 
-                                sides[group_side][-1][-1][attr_name] = stripped_attr_value
+                                sides[group_side][-1]['units'][-1][attr_name] = stripped_attr_value
                             
                             if (attr_name == 'id'):
 
                                 #print stripped_semi_attr_value
 
-                                sides[group_side][-1][-1][attr_name] = stripped_semi_attr_value
+                                sides[group_side][-1]['units'][-1][attr_name] = stripped_semi_attr_value
                             
                             # isPlayable propert present only if slot is playable 
                             elif (attr_name == 'isPlayable' and stripped_semi_attr_value == '1'):
 
-                                sides[group_side][-1][-1][attr_name] = True
+                                sides[group_side][-1]['units'][-1][attr_name] = True
 
                             # Mission - Entities - ItemN /w dataType = "Group" - Entities - ItemN - CustomAttributes
                             elif (len(class_path) == 7 and class_path[5] == 'CustomAttributes'
@@ -255,14 +256,14 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                                 #print 'ace_isMedic', stripped_semi_attr_value
                                 
-                                sides[group_side][-1][-1]['ace_isMedic'] = stripped_semi_attr_value
+                                sides[group_side][-1]['units'][-1]['ace_isMedic'] = stripped_semi_attr_value
 
                             elif (in_unit_custom_attrs_engineer and len(class_path) == 9 and class_path[7] == 'Value'
                                 and class_path[8] == 'data'):
 
                                 #print 'ace_isEngineer', stripped_semi_attr_value
 
-                                sides[group_side][-1][-1]['ace_isEngineer'] = stripped_semi_attr_value
+                                sides[group_side][-1]['units'][-1]['ace_isEngineer'] = stripped_semi_attr_value
 
                             #print class_path
                             #print line
@@ -278,12 +279,16 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
         for group in groups:
 
-            for unit in group:
+            print '\nGROUP ID:', group.get('groupID') or 'group without groupID'
+
+            for unit in group['units']:
 
                 if (unit.get('description')):
 
-                    print unit['description']
+                    print '\n', unit['description'], unit['type'], unit.get('ace_isEngineer'), unit.get('ace_isMedic')
+
+                    print unit['init']
 
                 else:
                     
-                    print '---', unit
+                    print 'next unit is not playable!', unit
