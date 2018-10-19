@@ -26,7 +26,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     in_unit_custom_attrs_engineer = False
 
-    in_group_custom_attrs = False
+    in_group_custom_attr_group_id = False
 
     for line in opened_mission_file:
         #print line
@@ -51,6 +51,10 @@ with open(path_to_mission_sqm) as opened_mission_file:
             elif (in_unit_class and len(class_path) < 6):
 
                 in_unit_class = False
+
+            elif (in_group_custom_attr_group_id and len(class_path) < 6):
+
+                in_group_custom_attr_group_id = False
 
             #if (in_unit_custom_attrs and len(class_path) == 6):
 
@@ -82,15 +86,19 @@ with open(path_to_mission_sqm) as opened_mission_file:
                 #general attr
                 if (class_path[0] == str('ScenarioData')):
                     if (attr_name == 'author'):
+
                         print 'Author:', stripped_attr_value
 
                     if (attr_name == 'loadScreen'):
+
                         print 'Load screen image:', stripped_attr_value
 
                     if (attr_name == 'saving' and stripped_semi_attr_value != '0'):
+                        
                         print 'Сохранение должно быть выключено.'.encode('utf-8')
 
                     if (attr_name == 'respawn' and stripped_semi_attr_value != '1'):
+                        
                         print 'Respawn must be set to "Spectator".'
 
                 elif (class_path[0] == str('CustomAttributes')):
@@ -117,10 +125,12 @@ with open(path_to_mission_sqm) as opened_mission_file:
                         #print splitted_attribute_definition
                         
                         if (attr_name == 'briefingName'):
+
                             print 'Mission name:', attr_value
 
                             # 2
                             if (not re.match('WOG \d{2,3} (\w+\ )+\d\.\d$', stripped_attr_value, re.UNICODE)):
+
                                 print 'Название миссии не удовлетворяет шаблону.'.encode('utf-8')
 
                             # 2.1
@@ -132,6 +142,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
                                 
                         # side (color, attack) - side (color, def)
                         elif (attr_name == 'overviewText'):
+
                             print stripped_attr_value.encode('utf-8')
 
                         elif ((attr_name == 'startWind' or attr_name == 'forecastWind')
@@ -141,6 +152,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                         elif ((attr_name == 'startRain' or attr_name == 'forecastRain')
                             and float(stripped_semi_attr_value) > 0.4):
+
                             print 'Rain must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
 
                     elif (len(class_path) >= 2 and class_path[1] == str('Entities')):
@@ -164,38 +176,44 @@ with open(path_to_mission_sqm) as opened_mission_file:
                                 # add empty list for the group units
                                 sides[group_side].append([])
 
-                                print 'new group', group_side
+                                #print 'new group', group_side
 
                             #elif (attr_name == 'id' or attr_name == 'type'):
                             #    
                             #    print attr_name, stripped_semi_attr_value
 
                         elif (not in_unit_class and in_group_class and group_side):
+
+                            print class_path
+
+                            print line
+
                             # Mission → Entities → ItemN /w dataType == 'Group' → Entities → ItemN
                             if (len(class_path) == 5 and attr_name == 'dataType' and stripped_attr_value == 'Object'):
 
                                 # add empty unit dict to the last group units list
-                                print sides[group_side][-1]
+                                #print sides[group_side][-1]
 
                                 sides[group_side][-1].append({})
 
-                                print sides[group_side][-1], '---'
+                                #print sides[group_side][-1], '---'
 
                                 in_unit_class = True
 
                             # Mission → Entities → ItemN /w dataType == 'Group' → CustomAttributes
                             #    → AttributeN /w property == "groupID" - Value - data - 'value' property
-                            #elif (len(class_path) == 5 and class_path[4] == 'CustomAttributes'):
-                                #and attr_name == 'property'):# and stripped_attr_value == 'groupID'):
-                            #else:
+                            elif (len(class_path) == 5 and class_path[3] == 'CustomAttributes'
+                                and attr_name == 'property' and stripped_attr_value == 'groupID'):
 
-                            #    print 2323, in_unit_class, line
-                                #in_group_custom_attrs = True
+                                #print 2323, in_unit_class, line
 
-                            # Mission - Entities - ItemN /w dataType = "Group" - CustomAttributes - AttributeN /w property == "groupID" - Value - data - 'value' property
-                            #elif (in_group_custom_attrs and len(class_path) == 7 and attr_name == 'value'):
+                                in_group_custom_attr_group_id = True
 
-                                #print 'l\n', line, '\nl'
+                            # Mission - Entities - ItemN /w dataType = "Group" - CustomAttributes -
+                            #   AttributeN /w property == "groupID" - Value - data - 'value' property
+                            elif (in_group_custom_attr_group_id and len(class_path) == 7 and attr_name == 'value'):
+
+                                print 'l\n', line, '\nl'
                         
                         elif (in_unit_class):
 
@@ -209,18 +227,14 @@ with open(path_to_mission_sqm) as opened_mission_file:
                             
                             if (attr_name == 'id'):
 
-                                print stripped_semi_attr_value
+                                #print stripped_semi_attr_value
 
                                 sides[group_side][-1][-1][attr_name] = stripped_semi_attr_value
                             
                             # isPlayable propert present only if slot is playable 
-                            #elif (attr_name == 'isPlayable' and stripped_semi_attr_value != '1'):
+                            elif (attr_name == 'isPlayable' and stripped_semi_attr_value == '1'):
 
-                            #    print 'slot is not playable!'
-
-                            #print class_path
-
-                            #print line
+                                sides[group_side][-1][-1][attr_name] = True
 
                             # Mission - Entities - ItemN /w dataType = "Group" - Entities - ItemN - CustomAttributes
                             elif (len(class_path) == 7 and class_path[5] == 'CustomAttributes'
@@ -256,4 +270,20 @@ with open(path_to_mission_sqm) as opened_mission_file:
                         #if (len(class_path) == 7 and class_path[3] == 'CustomAttributes'
                         #    and class_path[5] == 'Value' and class_path[6] == 'data' and attr_name == 'value'):
 
-    print sides
+    #print sides
+
+    for side, groups in sides.items():
+        
+        print side, len(groups)
+
+        for group in groups:
+
+            for unit in group:
+
+                if (unit.get('description')):
+
+                    print unit['description']
+
+                else:
+                    
+                    print '---', unit
