@@ -7,6 +7,7 @@
 #rm -rf ~/a3/wog_100_nastuplenie_10.ruha && . ~/a3/check.sh ~/a3/wog_100_nastuplenie_10.ruha.pbo
 #rm -rf ~/a3/wog_89_the_boar_that_stuck_10.fallujah && . ~/a3/check.sh ~/a3/wog_89_the_boar_that_stuck_10.fallujah.pbo
 #rm -rf ~/a3/wog_135_after_party_10.FDF_Isle1_a && . ~/a3/check.sh ~/a3/wog_135_after_party_10.FDF_Isle1_a.pbo
+#rm -rf ~/a3/wog_135_after_party_10.FDF_Isle1_a && . ~/a3/check.sh ~/a3/wog_135_after_party_10.FDF_Isle1_a.pbo > log
 
 # $1 is first argument to this script as in example above
 

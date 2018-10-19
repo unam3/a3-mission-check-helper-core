@@ -42,13 +42,13 @@ with open(path_to_mission_sqm) as opened_mission_file:
             #print class_path
 
         elif (re.match('\s*};', line)):
-            if (in_group_class and len(class_path) == 3):
+            if (in_group_class and group_side and len(class_path) == 3):
 
                 in_group_class = False
 
                 group_side = False
 
-            if (in_unit_class and not (in_group_class and len(class_path) >= 5)):
+            elif (in_unit_class and len(class_path) < 6):
 
                 in_unit_class = False
 
@@ -56,11 +56,11 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
             #    in_unit_custom_attrs = False
 
-            if (in_unit_custom_attrs_medic and len(class_path) == 7):
+            elif (in_unit_custom_attrs_medic and len(class_path) == 7):
 
                 in_unit_custom_attrs_medic = False
 
-            if (in_unit_custom_attrs_engineer and len(class_path) == 7):
+            elif (in_unit_custom_attrs_engineer and len(class_path) == 7):
 
                 in_unit_custom_attrs_engineer = False
 
@@ -153,7 +153,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                                 in_group_class = True
 
-                            elif (attr_name == 'side' and not (stripped_attr_value == 'West'
+                            elif (attr_name == 'side' and (stripped_attr_value == 'West'
                                 or stripped_attr_value == 'East' or stripped_attr_value == 'Independent')):
 
                                 group_side = stripped_attr_value
@@ -164,16 +164,22 @@ with open(path_to_mission_sqm) as opened_mission_file:
                                 # add empty list for the group units
                                 sides[group_side].append([])
 
-                                print 'new group'
+                                print 'new group', group_side
 
-                        # last part for additional filtering
+                            #elif (attr_name == 'id' or attr_name == 'type'):
+                            #    
+                            #    print attr_name, stripped_semi_attr_value
+
                         elif (not in_unit_class and in_group_class and group_side):
                             # Mission → Entities → ItemN /w dataType == 'Group' → Entities → ItemN
-                            if (len(class_path) == 5 and attr_name == 'dataType'
-                                and stripped_attr_value == 'Object'):
+                            if (len(class_path) == 5 and attr_name == 'dataType' and stripped_attr_value == 'Object'):
 
                                 # add empty unit dict to the last group units list
+                                print sides[group_side][-1]
+
                                 sides[group_side][-1].append({})
+
+                                print sides[group_side][-1], '---'
 
                                 in_unit_class = True
 
@@ -201,10 +207,16 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                                 sides[group_side][-1][-1][attr_name] = stripped_attr_value
                             
-                            # isPlayable propert present only if slot is playable 
-                            elif (attr_name == 'isPlayable' and stripped_semi_attr_value != '1'):
+                            if (attr_name == 'id'):
 
-                                print 'slot is not playable!'
+                                print stripped_semi_attr_value
+
+                                sides[group_side][-1][-1][attr_name] = stripped_semi_attr_value
+                            
+                            # isPlayable propert present only if slot is playable 
+                            #elif (attr_name == 'isPlayable' and stripped_semi_attr_value != '1'):
+
+                            #    print 'slot is not playable!'
 
                             #print class_path
 
