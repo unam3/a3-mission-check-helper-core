@@ -273,9 +273,33 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     #print sides
 
+
+    total_playable_slots = 0
+
+    playable_slots = {}
+
+    # посчитать количество игровых слотов
     for side, groups in sides.items():
         
-        print side, len(groups)
+        if (not playable_slots.get(side)):
+
+            playable_slots[side] = 0
+
+        for group in groups:
+
+            for unit in group['units']:
+
+                if (unit.get('isPlayable')):
+
+                    playable_slots[side] += 1
+
+                    total_playable_slots += 1
+
+    print '\nPlayable slots in total:', total_playable_slots
+
+    for side, groups in sides.items():
+        
+        print '\n', side, playable_slots[side], 'playable slots'
 
         for group in groups:
 
@@ -283,7 +307,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
             for unit in group['units']:
 
-                if (unit.get('description')):
+                if (unit.get('isPlayable')):
 
                     print '\n', unit['description'], unit['type'], unit.get('ace_isEngineer'), unit.get('ace_isMedic')
 
