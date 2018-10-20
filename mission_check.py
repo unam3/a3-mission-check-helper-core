@@ -20,8 +20,6 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     in_unit_class = False
     
-    #in_unit_custom_attrs = False
-
     in_unit_custom_attrs_medic = False
 
     in_unit_custom_attrs_engineer = False
@@ -55,10 +53,6 @@ with open(path_to_mission_sqm) as opened_mission_file:
             elif (in_group_custom_attr_group_id and len(class_path) < 6):
 
                 in_group_custom_attr_group_id = False
-
-            #if (in_unit_custom_attrs and len(class_path) == 6):
-
-            #    in_unit_custom_attrs = False
 
             elif (in_unit_custom_attrs_medic and len(class_path) == 7):
 
@@ -297,9 +291,13 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     print '\nPlayable slots in total:', total_playable_slots
 
+    if (total_playable_slots > 190):
+        
+        print 'The number of slots on missions should not exceed 190.'
+
     for side, groups in sides.items():
         
-        print '\n', side, playable_slots[side], 'playable slots'
+        print '\n', side, 'has', playable_slots[side], 'playable slots'
 
         for group in groups:
 
