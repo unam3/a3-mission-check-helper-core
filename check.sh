@@ -9,6 +9,7 @@
 #rm -rf ~/a3/wog_135_after_party_10.FDF_Isle1_a && . ~/a3/check.sh ~/a3/wog_135_after_party_10.FDF_Isle1_a.pbo
 #rm -rf ~/a3/wog_135_after_party_10.FDF_Isle1_a && . ~/a3/check.sh ~/a3/wog_135_after_party_10.FDF_Isle1_a.pbo > log
 #rm -rf ~/a3/wog_123_ada_12.pja307 && . ~/a3/check.sh ~/a3/wog_123_ada_12.pja307.pbo > log
+#rm -rf ~/a3/wog_88_welcome_to_the_jungle_10.lingor3 && . ~/a3/check.sh ~/a3/wog_88_welcome_to_the_jungle_10.lingor3.pbo > log
 
 # $1 is first argument to this script as in example above
 

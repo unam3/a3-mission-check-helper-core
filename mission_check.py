@@ -7,6 +7,53 @@ import re, sys
 
 path_to_mission_sqm = sys.argv[1]
 
+
+def customAttrIsMedic(isMedic):
+    
+    str = ''
+
+    if (isMedic == '0.0'):
+        
+        str = '"None" regular unit medical abillities'
+
+    elif (isMedic == '1.0'):
+        
+        str = '"Regular medic"'
+
+    elif (isMedic == '2.0'):
+        
+        str = '"Doctor"'
+
+    elif (isMedic is not None):
+        
+        str = 'Unusual "ace_isMedic" attribute value: %s' % (isMedic)
+
+    return str
+
+
+def customAttrIsEngineer(isEngineer):
+    
+    str = ''
+
+    if (isEngineer == '0.0'):
+        
+        str = 'Unit Engineer abillities is off'
+
+    elif (isEngineer == '1.0'):
+        
+        str = '"Engineer"'
+
+    elif (isEngineer == '2.0'):
+        
+        str = '"Advanced Engineer"'
+
+    elif (isEngineer is not None):
+        
+        str = 'Unusual "ace_isEngineer" attribute value: %s' % (isEngineer)
+
+    return str
+
+
 with open(path_to_mission_sqm) as opened_mission_file:
     #print opened_mission_file
 
@@ -307,7 +354,8 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                 if (unit.get('isPlayable')):
 
-                    print '\n', unit['description'], unit['type'], unit.get('ace_isEngineer'), unit.get('ace_isMedic')
+                    print '\n', unit['description'], unit['type'],  customAttrIsEngineer(unit.get('ace_isEngineer')),\
+                        customAttrIsMedic(unit.get('ace_isMedic'))
 
                     print unit['init']
 
