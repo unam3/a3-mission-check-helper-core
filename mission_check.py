@@ -59,8 +59,11 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     sides = {}
 
+    vehicles = []
+
     class_path = []
 
+    # units
     in_group_class = False
 
     group_side = False
@@ -72,6 +75,12 @@ with open(path_to_mission_sqm) as opened_mission_file:
     in_unit_custom_attrs_engineer = False
 
     in_group_custom_attr_group_id = False
+
+    # vehicles
+    in_object_class = False
+
+    is_vehicle_class = False
+
 
     for line in opened_mission_file:
         #print line
@@ -108,6 +117,12 @@ with open(path_to_mission_sqm) as opened_mission_file:
             elif (in_unit_custom_attrs_engineer and len(class_path) == 7):
 
                 in_unit_custom_attrs_engineer = False
+
+            elif (in_object_class and len(class_path) == 3):
+
+                in_object_class = False
+
+                is_vehicle_class = False
 
             class_path.pop()
 
@@ -218,6 +233,15 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                                 #print 'new group', group_side
 
+                            elif (attr_name == 'dataType' and stripped_attr_value == 'Object'):
+
+                                in_object_class = True
+
+
+                            elif (is_vehicle_class and attr_name == 'type'):
+
+                                vehicles[-1]['type'] = stripped_attr_value
+
                             #elif (attr_name == 'id' or attr_name == 'type'):
                             #    
                             #    print attr_name, stripped_semi_attr_value
@@ -309,10 +333,31 @@ with open(path_to_mission_sqm) as opened_mission_file:
                             #print class_path
                             #print line
 
-                        #if (len(class_path) == 7 and class_path[3] == 'CustomAttributes'
-                        #    and class_path[5] == 'Value' and class_path[6] == 'data' and attr_name == 'value'):
+                        elif (in_object_class):
 
-    #print sides
+                            #print class_path
+
+                            #print line
+
+                            if (len(class_path) == 4 and class_path[3] == 'Attributes'):
+                                
+                                if (attr_name == 'lock' and stripped_attr_value == 'UNLOCKED'):
+
+                                    vehicles.append({})
+
+                                    #print vehicles
+
+                                    is_vehicle_class = True
+
+                                elif (is_vehicle_class and attr_name == 'init'):
+                                    
+                                    #print line
+
+                                    vehicles[-1]['init'] = stripped_attr_value
+
+
+
+    print vehicles
 
 
     total_playable_slots = 0
