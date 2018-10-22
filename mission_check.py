@@ -319,6 +319,8 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     playable_slots = {}
 
+    uniqueUnitInits = set()
+
     # посчитать количество игровых слотов
     for side, groups in sides.items():
         
@@ -329,6 +331,8 @@ with open(path_to_mission_sqm) as opened_mission_file:
         for group in groups:
 
             for unit in group['units']:
+
+                uniqueUnitInits.add(unit.get('init'))
 
                 if (unit.get('isPlayable')):
 
@@ -341,6 +345,9 @@ with open(path_to_mission_sqm) as opened_mission_file:
     if (total_playable_slots > 190):
         
         print 'The number of slots on missions should not exceed 190.'
+
+    print '\nUnique unit inits:\n%s' % ('\n'.join(sorted(uniqueUnitInits)))
+
 
     for side, groups in sides.items():
         
