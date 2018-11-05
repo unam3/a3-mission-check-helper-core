@@ -18,10 +18,9 @@ i t title
 +   2.5 Description.ext. put warning
 +   4.1 Slots. 190 and less.
 -       check out Porto Muerte rhib guys
-    4.6 Slots. medic is required. check if any
-    4.8 Slots. any slot must be playable
++   4.6 Slots. medic is required. check if any: easy to DIY: watch unit type/medical abilities
     4.9 Slots. disabling special states check. (lowest priority)
-    4.10 Slots. (partly) engineer is required if any heavy vehicles. check if any
++   4.10 Slots. (partly) engineer is required if any heavy vehicles. check if any. visual check
     5.1 Vehicles and equipment. equip script locality check
     5.3 Vehicles and equipment. (partly) show rhs units, that doesn't require equipment
     5.4 Vehicles and equipment. equipment edit in unit/vehicle attributes

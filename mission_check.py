@@ -54,6 +54,9 @@ def customAttrIsEngineer(isEngineer):
     return str
 
 
+wmt_disable_fuel_stations = True
+
+
 with open(path_to_mission_sqm) as opened_mission_file:
     #print opened_mission_file
 
@@ -81,6 +84,9 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     is_vehicle_class = False
 
+    in_logic_class = False
+
+    in_logic_class_custom_attr_disable_fuel_st = False
 
     for line in opened_mission_file:
         #print line
@@ -123,6 +129,19 @@ with open(path_to_mission_sqm) as opened_mission_file:
                 in_object_class = False
 
                 is_vehicle_class = False
+
+            elif (in_logic_class):
+
+                if (len(class_path) == 3):
+
+                    in_logic_class = False
+
+                # why two line prints instead of oonly one with this condition?
+                #elif (in_logic_class_custom_attr_disable_fuel_st):
+                elif (in_logic_class_custom_attr_disable_fuel_st and len(class_path) == 5):
+
+                    in_logic_class_custom_attr_disable_fuel_st = False
+
 
             class_path.pop()
 
@@ -236,6 +255,10 @@ with open(path_to_mission_sqm) as opened_mission_file:
                             elif (attr_name == 'dataType' and stripped_attr_value == 'Object'):
 
                                 in_object_class = True
+
+                            elif (attr_name == 'dataType' and stripped_attr_value == 'Logic'):
+
+                                in_logic_class = True
 
 
                             elif (is_vehicle_class and attr_name == 'type'):
@@ -355,6 +378,31 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                                     vehicles[-1]['init'] = stripped_attr_value
 
+                        elif (in_logic_class):
+
+                            #print class_path
+
+                            #print line
+
+                            # CustomAttributes - AttributeN
+                            if (len(class_path) == 5 and class_path[3] == 'CustomAttributes' and
+                                attr_name == 'property' and stripped_attr_value == 'WMT_Main_DisableFuelSt'):
+                                
+                                in_logic_class_custom_attr_disable_fuel_st = True
+
+                            elif (in_logic_class_custom_attr_disable_fuel_st and attr_name == 'value' and
+                                stripped_semi_attr_value == '0'):
+                                
+                                wmt_disable_fuel_stations = False
+
+
+    if (wmt_disable_fuel_stations):
+    
+        print 'WMT: Fuel stations are disabled'
+
+    else:
+
+        print 'WMT: Fuel stations are enabled'
 
 
     print vehicles
