@@ -56,6 +56,8 @@ def customAttrIsEngineer(isEngineer):
 
 wmt_disable_fuel_stations = True
 
+wmt_auto_med_provision = True
+
 
 with open(path_to_mission_sqm) as opened_mission_file:
     #print opened_mission_file
@@ -87,6 +89,8 @@ with open(path_to_mission_sqm) as opened_mission_file:
     in_logic_class = False
 
     in_logic_class_custom_attr_disable_fuel_st = False
+
+    in_logic_class_custom_attr_auto_med_provision = False
 
     for line in opened_mission_file:
         #print line
@@ -138,9 +142,15 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                 # why two line prints instead of oonly one with this condition?
                 #elif (in_logic_class_custom_attr_disable_fuel_st):
-                elif (in_logic_class_custom_attr_disable_fuel_st and len(class_path) == 5):
+                elif (len(class_path) == 5):
+                    if (in_logic_class_custom_attr_disable_fuel_st):
 
-                    in_logic_class_custom_attr_disable_fuel_st = False
+                        in_logic_class_custom_attr_disable_fuel_st = False
+    
+
+                    elif (in_logic_class_custom_attr_auto_med_provision):
+
+                        in_logic_class_custom_attr_auto_med_provision = False
 
 
             class_path.pop()
@@ -386,14 +396,25 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                             # CustomAttributes - AttributeN
                             if (len(class_path) == 5 and class_path[3] == 'CustomAttributes' and
-                                attr_name == 'property' and stripped_attr_value == 'WMT_Main_DisableFuelSt'):
+                                attr_name == 'property'):
                                 
-                                in_logic_class_custom_attr_disable_fuel_st = True
+                                if (stripped_attr_value == 'WMT_Main_DisableFuelSt'):
+                                
+                                    in_logic_class_custom_attr_disable_fuel_st = True
+
+                                elif (stripped_attr_value == 'WMT_Main_AutoMedicine'):
+                                
+                                    in_logic_class_custom_attr_auto_med_provision = True
 
                             elif (in_logic_class_custom_attr_disable_fuel_st and attr_name == 'value' and
                                 stripped_semi_attr_value == '0'):
                                 
                                 wmt_disable_fuel_stations = False
+
+                            elif (in_logic_class_custom_attr_auto_med_provision and attr_name == 'value' and
+                                stripped_semi_attr_value == '0'):
+                                
+                                wmt_auto_med_provision = False
 
 
     if (wmt_disable_fuel_stations):
@@ -403,6 +424,15 @@ with open(path_to_mission_sqm) as opened_mission_file:
     else:
 
         print 'WMT: Fuel stations are enabled'
+
+
+    if (wmt_auto_med_provision):
+    
+        print 'WMT: Auto medicine provision is disabled'
+
+    else:
+
+        print 'WMT: Auto medicine provision is enabled'
 
 
     print vehicles
