@@ -433,7 +433,6 @@ with open(path_to_mission_sqm) as opened_mission_file:
                                 wmt_side_channel_by_lr = False
 
 
-
     if (wmt_disable_fuel_stations):
     
         print 'WMT: Fuel stations are disabled'
@@ -461,7 +460,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
         print 'WMT: Side channel by LR is disabled'
 
 
-    print vehicles
+    print 'vehicles: %s' % (vehicles)
 
 
     total_playable_slots = 0
@@ -495,7 +494,25 @@ with open(path_to_mission_sqm) as opened_mission_file:
         
         print 'The number of slots on missions should not exceed 190.'
 
-    print '\nUnique unit inits:\n%s' % ('\n'.join(sorted(uniqueUnitInits)))
+
+    sorted_inits = sorted(uniqueUnitInits)
+
+    unique_sorted_inits = map(
+        lambda x: [
+            x,
+            x.split('""')[1]
+        ],
+        sorted(uniqueUnitInits)
+    )
+
+    print '\nUnique unit inits:\n%s' % (
+        '\n'.join(
+            map(
+                lambda x: ' — '.join(x),
+                unique_sorted_inits
+            )
+        )
+    )
 
 
     for side, groups in sides.items():
