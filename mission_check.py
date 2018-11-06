@@ -5,13 +5,15 @@ from __future__ import unicode_literals
 
 import re, sys, os
 
-from subprocess import call
+from subprocess import call, check_output, CalledProcessError
 
 path_to_mission_folder = sys.argv[1]
 
 path_to_mission_sqm = path_to_mission_folder + '/mission.sqm'
 
 devnull = open(os.devnull, 'w')
+
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def customAttrIsMedic(isMedic):
@@ -58,6 +60,28 @@ def customAttrIsEngineer(isEngineer):
         str = 'Unusual "ace_isEngineer" attribute value: %s' % (isEngineer)
 
     return str
+
+
+def checkVanillaEquip(relative_path):
+    out = None
+
+    try:
+        out = check_output(
+            [
+                'grep',
+                '-i',
+                '-f', current_script_dir + '/V_Weapon.sqf',
+                path_to_mission_folder + '/' + '/'.join(
+                    relative_path.split('""')[1].split('\\')
+                )
+            ],
+            stderr=devnull
+        )
+    except CalledProcessError as shi:
+        if (shi.returncode != 1):
+            print 'grep returncode:', shi.returncode
+
+    return '' if (not out) else 'vannila items: ' + out.decode('utf-8')
 
 
 wmt_disable_fuel_stations = True
@@ -523,6 +547,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
                 stdout=devnull,
                 stderr=devnull
             ) else 'Has no radio',
+            checkVanillaEquip(x)
         ],
         sorted_inits
     )
