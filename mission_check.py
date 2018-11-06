@@ -3,9 +3,15 @@
 
 from __future__ import unicode_literals
 
-import re, sys
+import re, sys, os
 
-path_to_mission_sqm = sys.argv[1]
+from subprocess import call
+
+path_to_mission_folder = sys.argv[1]
+
+path_to_mission_sqm = path_to_mission_folder + '/mission.sqm'
+
+devnull = open(os.devnull, 'w')
 
 
 def customAttrIsMedic(isMedic):
@@ -500,10 +506,29 @@ with open(path_to_mission_sqm) as opened_mission_file:
     unique_sorted_inits = map(
         lambda x: [
             x,
-            x.split('""')[1]
+            x.split('""')[1],
+            # 0 if found, 1 if not and 2 if error
+            '' if not call(
+                [
+                    'grep',
+                    '-i',
+                    '-o',
+                    # stop after first match
+                    #'-m', '1',
+                    'itemradio',
+                    path_to_mission_folder + '/' + '/'.join(
+                        x.split('""')[1].split('\\')
+                    )
+                ],
+                stdout=devnull,
+                stderr=devnull
+            ) else 'Has no radio',
         ],
-        sorted(uniqueUnitInits)
+        sorted_inits
     )
+
+    devnull.close()
+
 
     print '\nUnique unit inits:\n%s' % (
         '\n'.join(

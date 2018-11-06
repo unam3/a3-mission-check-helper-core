@@ -10,6 +10,7 @@
 #rm -rf ~/a3/wog_135_after_party_10.FDF_Isle1_a && . ~/a3/check.sh ~/a3/wog_135_after_party_10.FDF_Isle1_a.pbo > log
 #rm -rf ~/a3/wog_123_ada_12.pja307 && . ~/a3/check.sh ~/a3/wog_123_ada_12.pja307.pbo > log
 #rm -rf ~/a3/wog_88_welcome_to_the_jungle_10.lingor3 && . ~/a3/check.sh ~/a3/wog_88_welcome_to_the_jungle_10.lingor3.pbo > log
+#rm -rf ~/a3/wog_48_tymanoe_ytro_10.chernarus_summer && . ~/a3/check.sh ~/a3/wog_48_tymanoe_ytro_10.chernarus_summer.pbo > log
 
 # $1 is first argument to this script as in example above
 
@@ -59,7 +60,7 @@ function check_pbo {
     fi
     
     # for working pipes
-    PYTHONIOENCODING=UTF-8 python2 mission_check.py $mission_sqm;
+    PYTHONIOENCODING=UTF-8 python2 mission_check.py $mission_folder;
 
 
     description_file_path=$mission_folder/Description.ext;
