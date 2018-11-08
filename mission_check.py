@@ -490,6 +490,26 @@ with open(path_to_mission_sqm) as opened_mission_file:
         print 'WMT: Side channel by LR is disabled'
 
 
+    # 0 if found, 1 if not and 2 if error
+    wog3_no_auto_long_range_radio = True if not call(
+        [
+            'grep',
+            #'-i',
+            '-o',
+            # stop after first match
+            #'-m', '1',
+            'wog3_no_auto_long_range_radio = true;',
+            path_to_mission_folder + '/init.sqf'
+        ],
+        stdout=devnull,
+        stderr=devnull
+    ) else False
+
+    if (wog3_no_auto_long_range_radio):
+        
+        print 'Has set no auto long range radio'
+
+
     print 'vehicles: %s' % (vehicles)
 
 
