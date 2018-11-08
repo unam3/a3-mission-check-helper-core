@@ -84,6 +84,36 @@ def checkVanillaEquip(relative_path):
     return '' if (not out) else 'vannila items: ' + out.decode('utf-8')
 
 
+def parse_vehicle_init(init):
+
+    setVariables = init.split('this setVariable [""')
+
+    init_options = {}
+    
+    # has any setVariable declaration
+    if len(setVariables) > 1:
+
+        for declaration in setVariables[1:]:
+
+            if declaration.startswith('tf_side'):
+
+                # tf_side"",""east""]; 
+                #print declaration
+                #print declaration[10:].split('""')[1]
+
+                init_options['tf_side'] = declaration[10:].split('""')[1]
+
+            elif declaration.startswith('WMT_Side'):
+
+                #print 'WMT_Side'
+                #print declaration
+                #print declaration[11:].strip(' ').split(']')[0]
+
+                init_options['WMT_Side'] = declaration[11:].strip(' ').split(']')[0]
+
+    return init_options if len(init_options) else None
+
+
 wmt_disable_fuel_stations = True
 
 wmt_auto_med_provision = True
@@ -510,7 +540,19 @@ with open(path_to_mission_sqm) as opened_mission_file:
         print 'Has set no auto long range radio'
 
 
-    print 'vehicles: %s' % (vehicles)
+    print '\nvehicles: %s' % (vehicles)
+
+    for vehicle in vehicles:
+        
+        init = vehicle.get('init')
+        
+        if init:
+
+            parse_results = parse_vehicle_init(init)
+
+            if parse_results:
+
+                print vehicle, parse_vehicle_init(init)
 
 
     total_playable_slots = 0
