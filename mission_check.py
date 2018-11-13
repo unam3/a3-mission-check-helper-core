@@ -304,12 +304,12 @@ with open(path_to_mission_sqm) as opened_mission_file:
                             print stripped_attr_value.encode('utf-8')
 
                         elif ((attr_name == 'startWind' or attr_name == 'forecastWind')
-                            and float(stripped_semi_attr_value) > 0.4):
+                            and float(stripped_semi_attr_value) >= 0.41):
 
                             print 'Wind must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
 
                         elif ((attr_name == 'startRain' or attr_name == 'forecastRain')
-                            and float(stripped_semi_attr_value) > 0.4):
+                            and float(stripped_semi_attr_value) >= 0.41):
 
                             print 'Rain must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
 
