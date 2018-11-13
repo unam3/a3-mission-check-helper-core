@@ -11,6 +11,7 @@
 #rm -rf ~/a3/wog_123_ada_12.pja307 && . ~/a3/check.sh ~/a3/wog_123_ada_12.pja307.pbo > log
 #rm -rf ~/a3/wog_88_welcome_to_the_jungle_10.lingor3 && . ~/a3/check.sh ~/a3/wog_88_welcome_to_the_jungle_10.lingor3.pbo > log
 #rm -rf ~/a3/wog_48_tymanoe_ytro_10.chernarus_summer && . ~/a3/check.sh ~/a3/wog_48_tymanoe_ytro_10.chernarus_summer.pbo > log
+#rm -rf ~/a3/wog_133_sistema_pro_10.ruha && . ~/a3/check.sh ~/a3/wog_133_sistema_pro_10.ruha.pbo > log
 
 # $1 is first argument to this script as in example above
 

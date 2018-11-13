@@ -63,7 +63,12 @@ def customAttrIsEngineer(isEngineer):
 
 
 def checkVanillaEquip(relative_path):
+
     out = None
+
+    init_path = path_to_mission_folder + '/' + '/'.join(
+        relative_path.split('""')[1].split('\\')
+    )
 
     try:
         out = check_output(
@@ -71,15 +76,16 @@ def checkVanillaEquip(relative_path):
                 'grep',
                 '-i',
                 '-f', current_script_dir + '/V_Weapon.sqf',
-                path_to_mission_folder + '/' + '/'.join(
-                    relative_path.split('""')[1].split('\\')
-                )
+                init_path
             ],
             stderr=devnull
         )
+
     except CalledProcessError as shi:
+
         if (shi.returncode != 1):
-            print 'grep returncode:', shi.returncode
+
+            print 'checkVanillaEquip return code:', shi.returncode, 'for', init_path
 
     return '' if (not out) else 'vannila items: ' + out.decode('utf-8')
 
@@ -535,10 +541,57 @@ with open(path_to_mission_sqm) as opened_mission_file:
         stderr=devnull
     ) else False
 
+
+    groupLeadersUniqueInits = set()
+
     if (wog3_no_auto_long_range_radio):
         
         print 'Has set no auto long range radio'
 
+    else:
+        
+        # Check equpment of first units in squads (team leaders) for backpacks
+        # If unit has backpack, then radio will be spawned behind him
+        for side in sides:
+            
+            for group in sides[side]:
+
+                print side, group.get('groupID') or 'group without groupID', group['units'][0]
+
+                init = group['units'][0].get('init')
+
+                if (init):
+                    
+                    groupLeadersUniqueInits.add(init)
+
+                else:
+                    
+                    print '^^^ has no init'
+
+        for init in groupLeadersUniqueInits:
+            
+            print init
+
+            # 0 if found, 1 if not and 2 if error
+            print 'has backpack, will dup' if not call(
+                [
+                    'grep',
+                    '-i',
+                    '-o',
+                    # stop after first match
+                    '-m', '1',
+                    #'^_this addBackpack',
+                    'addBackpack',
+                    path_to_mission_folder + '/' + '/'.join(
+                        init.split('""')[1].split('\\')
+                    )
+                ],
+                stdout=devnull,
+                stderr=devnull
+            ) else ''
+
+
+    print '\n~~~~\n'
 
     print '\nvehicles: %s' % (vehicles)
 
@@ -584,35 +637,51 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     if (total_playable_slots > 190):
         
-        print 'The number of slots on missions should not exceed 190.'
+        print '\nThe number of slots on missions should not exceed 190.'
 
 
     sorted_inits = sorted(uniqueUnitInits)
 
-    unique_sorted_inits = map(
-        lambda x: [
-            x,
-            x.split('""')[1],
-            # 0 if found, 1 if not and 2 if error
-            '' if not call(
-                [
-                    'grep',
-                    '-i',
-                    '-o',
-                    # stop after first match
-                    #'-m', '1',
-                    'itemradio',
-                    path_to_mission_folder + '/' + '/'.join(
-                        x.split('""')[1].split('\\')
-                    )
-                ],
-                stdout=devnull,
-                stderr=devnull
-            ) else 'Has no radio',
-            checkVanillaEquip(x)
-        ],
-        sorted_inits
-    )
+    print '\n\n'
+    print sorted_inits
+
+    unique_sorted_inits = []
+    
+    for init in sorted_inits:
+
+        # None if no init
+        if (init):
+            
+            print 'init:', init
+            splitted_init = init.split('""')
+
+            if (len(splitted_init) > 1):
+
+                unique_sorted_inits.append([
+                    init,
+                    splitted_init[1],
+                    # 0 if found, 1 if not and 2 if error
+                    '' if not call(
+                        [
+                            'grep',
+                            '-i',
+                            '-o',
+                            # stop after first match
+                            #'-m', '1',
+                            'itemradio',
+                            path_to_mission_folder + '/' + '/'.join(
+                                splitted_init[1].split('\\')
+                            )
+                        ],
+                        stdout=devnull,
+                        stderr=devnull
+                    ) else 'Has no radio',
+                    checkVanillaEquip(init)
+                ])
+
+            else:
+
+                unique_sorted_inits.append([init])
 
     devnull.close()
 
@@ -642,7 +711,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
                     print '\n', unit['description'], unit['type'],  customAttrIsEngineer(unit.get('ace_isEngineer')),\
                         customAttrIsMedic(unit.get('ace_isMedic'))
 
-                    print unit['init']
+                    print unit.get('init')
 
                 else:
                     
