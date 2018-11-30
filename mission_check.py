@@ -3,9 +3,18 @@
 
 from __future__ import unicode_literals
 
-import re, sys, os
+import re, sys, os, json
 
 from subprocess import call, check_output, CalledProcessError
+
+
+check_results = {
+    'mission_attrs': {},
+    'vehicles': [],
+    'slots': {},
+    'errors': [],
+    'warnings': {}
+}
 
 path_to_mission_folder = sys.argv[1]
 
@@ -16,50 +25,51 @@ devnull = open(os.devnull, 'w')
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def customAttrIsMedic(isMedic):
-    
-    str = ''
+#clientside this!
+#def customAttrIsMedic(isMedic):
+#    
+#    str = ''
+#
+#    if (isMedic == '0.0'):
+#        
+#        str = '"None" regular unit medical abillities'
+#
+#    elif (isMedic == '1.0'):
+#        
+#        str = '"Regular medic"'
+#
+#    elif (isMedic == '2.0'):
+#        
+#        str = '"Doctor"'
+#
+#    elif (isMedic is not None):
+#        
+#        str = 'Unusual "ace_isMedic" attribute value: %s' % (isMedic)
+#
+#    return str
 
-    if (isMedic == '0.0'):
-        
-        str = '"None" regular unit medical abillities'
-
-    elif (isMedic == '1.0'):
-        
-        str = '"Regular medic"'
-
-    elif (isMedic == '2.0'):
-        
-        str = '"Doctor"'
-
-    elif (isMedic is not None):
-        
-        str = 'Unusual "ace_isMedic" attribute value: %s' % (isMedic)
-
-    return str
-
-
-def customAttrIsEngineer(isEngineer):
-    
-    str = ''
-
-    if (isEngineer == '0.0'):
-        
-        str = 'Unit Engineer abillities is off'
-
-    elif (isEngineer == '1.0'):
-        
-        str = '"Engineer"'
-
-    elif (isEngineer == '2.0'):
-        
-        str = '"Advanced Engineer"'
-
-    elif (isEngineer is not None):
-        
-        str = 'Unusual "ace_isEngineer" attribute value: %s' % (isEngineer)
-
-    return str
+#clientside this!
+#def customAttrIsEngineer(isEngineer):
+#    
+#    str = ''
+#
+#    if (isEngineer == '0.0'):
+#        
+#        str = 'Unit Engineer abillities is off'
+#
+#    elif (isEngineer == '1.0'):
+#        
+#        str = '"Engineer"'
+#
+#    elif (isEngineer == '2.0'):
+#        
+#        str = '"Advanced Engineer"'
+#
+#    elif (isEngineer is not None):
+#        
+#        str = 'Unusual "ace_isEngineer" attribute value: %s' % (isEngineer)
+#
+#    return str
 
 
 def checkVanillaEquip(relative_path):
@@ -85,7 +95,7 @@ def checkVanillaEquip(relative_path):
 
         if (shi.returncode != 1):
 
-            print 'checkVanillaEquip return code:', shi.returncode, 'for', init_path
+            check_results['errors'].append('checkVanillaEquip return code: %s for %s' % (shi.returncode, init_path))
 
     return '' if (not out) else 'vannila items: ' + out.decode('utf-8')
 
@@ -163,10 +173,12 @@ with open(path_to_mission_sqm) as opened_mission_file:
     in_logic_class_custom_attr_side_channel_by_lr = False
 
     for line in opened_mission_file:
+
         #print line
         #print len(class_path), class_path
 
         if (re.match('\s*class ', line) and not line.endswith('{};\r\n')):
+
             class_name = line.split('class ')[1][:-2]
 
             class_path.append(class_name)
@@ -176,6 +188,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
             #print class_path
 
         elif (re.match('\s*};', line)):
+
             if (in_group_class and group_side and len(class_path) == 3):
 
                 in_group_class = False
@@ -213,6 +226,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
                 # why two line prints instead of oonly one with this condition?
                 #elif (in_logic_class_custom_attr_disable_fuel_st):
                 elif (len(class_path) == 5):
+
                     if (in_logic_class_custom_attr_disable_fuel_st):
 
                         in_logic_class_custom_attr_disable_fuel_st = False
@@ -231,9 +245,11 @@ with open(path_to_mission_sqm) as opened_mission_file:
             #print class_path
 
         elif (len(class_path)):
+
             splitted_attribute_definition = line.strip().decode('utf-8').split(' = ')
 
             if (len(splitted_attribute_definition) == 2):
+
                 attr_name, attr_value = splitted_attribute_definition
 
                 # in the mission file strings strings are in quotes, ends with semi
@@ -243,21 +259,22 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                 #general attr
                 if (class_path[0] == str('ScenarioData')):
+
                     if (attr_name == 'author'):
 
-                        print 'Author:', stripped_attr_value
+                        check_results['mission_attrs']['author'] = stripped_attr_value
 
                     if (attr_name == 'loadScreen'):
 
-                        print 'Load screen image:', stripped_attr_value
+                        check_results['mission_attrs']['loadScreen'] = stripped_attr_value
 
                     if (attr_name == 'saving' and stripped_semi_attr_value != '0'):
                         
-                        print 'Сохранение должно быть выключено.'.encode('utf-8')
+                        check_results['mission_attrs']['w_saving'] = True
 
                     if (attr_name == 'respawn' and stripped_semi_attr_value != '1'):
                         
-                        print 'Respawn must be set to "Spectator".'
+                        check_results['mission_attrs']['w_respawn'] = True
 
                 elif (class_path[0] == str('CustomAttributes')):
 
@@ -270,12 +287,13 @@ with open(path_to_mission_sqm) as opened_mission_file:
                         and class_path[6] == 'Item0' and class_path[7] == 'data'
                         and attr_name == 'value' and stripped_attr_value != 'Spectator')):
 
-                            print 'Only "Spectator" option must be set in the "Rulesets" of the "Multiplayer" attributes'
-                    #general attr
+                            check_results['mission_attrs']['w_respawn_rulesets'] = True
+
+                    #general attrs
                     if (len(class_path) == 3 and class_path[1] == 'Category1' and class_path[2] == 'Attribute0'
                         and attr_name == 'property' and stripped_attr_value != 'EnableTargetDebug'):
 
-                            print 'Please turn on "Enable Target Debugging"'
+                            check_results['mission_attrs']['w_enable_target_debugging'] = True
 
                 elif (class_path[0] == str('Mission')):
 
@@ -284,34 +302,28 @@ with open(path_to_mission_sqm) as opened_mission_file:
                         
                         if (attr_name == 'briefingName'):
 
-                            print 'Mission name:', attr_value
+                            check_results['mission_attrs']['briefing_name'] = stripped_attr_value
 
-                            # 2
                             if (not re.match('WOG \d{2,3} (\w+\ )+\d\.\d$', stripped_attr_value, re.UNICODE)):
 
-                                print 'Название миссии не удовлетворяет шаблону.'.encode('utf-8')
+                                check_results['mission_attrs']['w_briefing_name'] = True
 
-                            # 2.1
-                            #if (not stripped_attr_value.startswith('WOG ')):
-                            #    #print ('Название миссии должно начинаться с "WOG".'.encode('utf-8')
-                            #    print ('Название миссии должно начинаться с "WOG". (%s)' % (stripped_attr_value)).encode('utf-8'),
-
-                            #if (attr_value.decode('utf-8').split(' ')):
-                                
                         # side (color, attack) - side (color, def)
                         elif (attr_name == 'overviewText'):
 
-                            print stripped_attr_value.encode('utf-8')
+                            #print stripped_attr_value.encode('utf-8')
+                            
+                            check_results['mission_attrs']['overview_text'] = stripped_attr_value
 
                         elif ((attr_name == 'startWind' or attr_name == 'forecastWind')
                             and float(stripped_semi_attr_value) >= 0.41):
 
-                            print 'Wind must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
+                            check_results['mission_attrs']['w_wind'] = int(float(stripped_semi_attr_value) * 100)
 
                         elif ((attr_name == 'startRain' or attr_name == 'forecastRain')
                             and float(stripped_semi_attr_value) >= 0.41):
 
-                            print 'Rain must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
+                           check_results['mission_attrs']['w_rain'] = int(float(stripped_semi_attr_value) * 100)
 
                     elif (len(class_path) >= 2 and class_path[1] == str('Entities')):
 
@@ -499,31 +511,11 @@ with open(path_to_mission_sqm) as opened_mission_file:
                                 wmt_side_channel_by_lr = False
 
 
-    if (wmt_disable_fuel_stations):
-    
-        print 'WMT: Fuel stations are disabled'
+    check_results['mission_attrs']['wmt_disable_fuel_stations'] = wmt_disable_fuel_stations
 
-    else:
+    check_results['mission_attrs']['wmt_auto_med_provision'] = wmt_auto_med_provision
 
-        print 'WMT: Fuel stations are enabled'
-
-
-    if (wmt_auto_med_provision):
-    
-        print 'WMT: Auto medicine provision is disabled'
-
-    else:
-
-        print 'WMT: Auto medicine provision is enabled'
-
-
-    if (wmt_side_channel_by_lr):
-    
-        print 'WMT: Side channel by LR is enabled'
-
-    else:
-
-        print 'WMT: Side channel by LR is disabled'
+    check_results['mission_attrs']['wmt_side_channel_by_lr'] = wmt_side_channel_by_lr
 
 
     # 0 if found, 1 if not and 2 if error
@@ -546,7 +538,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     if (wog3_no_auto_long_range_radio):
         
-        print 'Has set no auto long range radio'
+        check_results['mission_attrs']['wog3_no_auto_long_range_radio'] = True
 
     else:
         
@@ -556,7 +548,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
             
             for group in sides[side]:
 
-                print side, group.get('groupID') or 'group without groupID', group['units'][0]
+                #print side, group.get('groupID') or 'group without groupID', group['units'][0]
 
                 init = group['units'][0].get('init')
 
@@ -564,16 +556,16 @@ with open(path_to_mission_sqm) as opened_mission_file:
                     
                     groupLeadersUniqueInits.add(init)
 
-                else:
-                    
-                    print '^^^ has no init'
+                #else:
+                #    
+                #    print '^^^ has no init'
 
         for init in groupLeadersUniqueInits:
             
-            print init
+            #print init
 
             # 0 if found, 1 if not and 2 if error
-            print 'has backpack, will dup' if not call(
+            if not call(
                 [
                     'grep',
                     '-i',
@@ -588,33 +580,19 @@ with open(path_to_mission_sqm) as opened_mission_file:
                 ],
                 stdout=devnull,
                 stderr=devnull
-            ) else ''
+            ):
+                if not check_results['warnings']['backpacks_dup']:
 
+                    check_results['warnings']['backpacks_dup'] = []
+                    
+                check_results['warnings']['backpacks_dup'].append(init)
 
-    print '\n~~~~\n'
-
-    print '\nvehicles: %s' % (vehicles)
-
-    for vehicle in vehicles:
-        
-        init = vehicle.get('init')
-        
-        if init:
-
-            parse_results = parse_vehicle_init(init)
-
-            if parse_results:
-
-                print vehicle, parse_vehicle_init(init)
-
-
-    total_playable_slots = 0
 
     playable_slots = {}
 
     uniqueUnitInits = set()
 
-    # посчитать количество игровых слотов
+    # get slots count
     for side, groups in sides.items():
         
         if (not playable_slots.get(side)):
@@ -631,88 +609,85 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                     playable_slots[side] += 1
 
-                    total_playable_slots += 1
+    check_results['slots']['playable_slots'] = playable_slots
 
-    print '\nPlayable slots in total:', total_playable_slots
 
-    if (total_playable_slots > 190):
-        
-        print '\nThe number of slots on missions should not exceed 190.'
+    #clientside this!
+    #if (total_playable_slots > 190):
+    #    
+    #    check_results['slots']['too_much_slots'] = True
 
 
     sorted_inits = sorted(uniqueUnitInits)
 
-    print '\n\n'
-    print sorted_inits
+    #print sorted_inits
 
     unique_sorted_inits = []
     
     for init in sorted_inits:
+        
+        unique_init = {'init': init}
 
         # None if no init
         if (init):
             
-            print 'init:', init
+            #print 'init:', init
+
             splitted_init = init.split('""')
 
             if (len(splitted_init) > 1):
 
-                unique_sorted_inits.append([
-                    init,
-                    splitted_init[1],
-                    # 0 if found, 1 if not and 2 if error
-                    '' if not call(
-                        [
-                            'grep',
-                            '-i',
-                            '-o',
-                            # stop after first match
-                            #'-m', '1',
-                            'itemradio',
-                            path_to_mission_folder + '/' + '/'.join(
-                                splitted_init[1].split('\\')
-                            )
-                        ],
-                        stdout=devnull,
-                        stderr=devnull
-                    ) else 'Has no radio',
-                    checkVanillaEquip(init)
-                ])
+                unique_init['splitted_init'] = splitted_init[1]
 
-            else:
+                # 0 if found, 1 if not and 2 if error
+                unique_init['has_no_radio'] = bool(call(
+                    [
+                        'grep',
+                        '-i',
+                        '-o',
+                        # stop after first match
+                        #'-m', '1',
+                        'itemradio',
+                        path_to_mission_folder + '/' + '/'.join(
+                            splitted_init[1].split('\\')
+                        )
+                    ],
+                    stdout=devnull,
+                    stderr=devnull
+                ))
 
-                unique_sorted_inits.append([init])
+                unique_init['vanilla_equipment'] = checkVanillaEquip(init)
+
+        unique_sorted_inits.append(unique_init)
 
     devnull.close()
 
-
-    print '\nUnique unit inits:\n%s' % (
-        '\n'.join(
-            map(
-                lambda x: ' — '.join(x),
-                unique_sorted_inits
-            )
-        )
-    )
+    check_results['slots']['unique_inits'] = unique_sorted_inits
 
 
-    for side, groups in sides.items():
-        
-        print '\n', side, 'has', playable_slots[side], 'playable slots'
+    #clientside this!
+    #for side, groups in sides.items():
+    #    
+    #    print '\n', side, 'has', playable_slots[side], 'playable slots'
 
-        for group in groups:
+    #    for group in groups:
 
-            print '\nGROUP ID:', group.get('groupID') or 'group without groupID'
+    #        print '\nGROUP ID:', group.get('groupID') or 'group without groupID'
 
-            for unit in group['units']:
+    #        for unit in group['units']:
 
-                if (unit.get('isPlayable')):
+    #            if (unit.get('isPlayable')):
 
-                    print '\n', unit['description'], unit['type'],  customAttrIsEngineer(unit.get('ace_isEngineer')),\
-                        customAttrIsMedic(unit.get('ace_isMedic'))
+    #                print '\n', unit['description'], unit['type'],  unit.get('ace_isEngineer'),\ unit.get('ace_isMedic')
 
-                    print unit.get('init')
+    #                print unit.get('init')
 
-                else:
-                    
-                    print 'next unit is not playable!', unit
+    #            else:
+    #                
+    #                print 'next unit is not playable!', unit
+
+    
+    check_results['sides'] = sides
+
+
+print json.dumps(check_results, ensure_ascii=False)
