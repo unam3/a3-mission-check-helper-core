@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # to test script run:
 #. ~/a3/check.sh
@@ -19,17 +19,7 @@ function check_pbo {
     #/home/yay/a3/wog_156_voshod_10.Takistan.pbo
     #echo $1
 
-    filename=`sed -n -E 's/^(.*\/)*//p' <<< $1`
-
-    #echo $filename
-
-    filename_check=`sed -n -E '/^wog_[0-9]{2,3}_[a-z0-9_]+_[0-9]{2}\.[A-Za-z0-9_]+\.pbo$/p' <<< $filename`
-
-    if [[ -z $filename_check ]];
-        then echo "wrong mission file name: $filename";
-
-        return;
-    fi
+    #filename check was here
 
     extractpbo_msg_last_line=`extractpbo $1 |& tail -n 1` 
     
@@ -73,54 +63,13 @@ function check_pbo {
     fi    
 }
 
-function run_tests {
-    echo 'starting tests'
-
-    # all filenames is wrong
-    test_filenames=(
-        "pluh"
-        "Takistan.pbo"
-        "og_156_voshod.10.Takistan.pbo"
-        "og_156_voshod_10.Tak.istan.pbo"
-        "og_6_voshod_10.Tak.istan.pbo"
-        "og_156_voshod_10.Takistan.pbo"
-    )
-
-    i=0;
-
-    file_name_test_failed=false
-
-    while [[ -n ${test_filenames[i]} ]] && ! $file_name_test_failed
-    do {
-        test_results=`check_pbo ${test_filenames[i]};`
-
-        reference_test_failed_result="wrong mission file name: ${test_filenames[i]}";
-    
-        if [[ $test_results = $reference_test_failed_result ]]
-        then
-            echo 'test' $i 'is ok:' $test_results;
-        else {
-            file_name_test_failed=true;
-
-            echo 'test' $i 'is failed'; #$test_results;
-        } fi;
-
-        i=$(($i+1));
-    } done
-
-    if $file_name_test_failed;
-    then
-        echo 'pbo filename test failed';
-    else
-        echo 'pbo filename test passed';
-    fi;
-}
-
 # if first param is not set
-if [[ -z $1 ]];
-    then run_tests;
-    else check_pbo $1;
-fi
+#if [[ -z $1 ]];
+#    then run_tests;
+#    else check_pbo $1;
+#fi
+
+check_pbo $1;
 
 # TODO: check size of the images
 # filesize in KB
