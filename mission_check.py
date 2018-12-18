@@ -5,8 +5,9 @@ from __future__ import unicode_literals
 
 import re, sys, os, json
 
-from subprocess import call, check_output, CalledProcessError
+from vehicles_list import armored 
 
+from subprocess import call, check_output, CalledProcessError
 
 check_results = {
     'mission_attrs': {},
@@ -162,7 +163,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
     # vehicles
     in_object_class = False
 
-    is_vehicle_class = False
+    object_class_attrs = {}
 
     in_logic_class = False
 
@@ -215,7 +216,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                 in_object_class = False
 
-                is_vehicle_class = False
+                object_class_attrs = {}
 
             elif (in_logic_class):
 
@@ -327,6 +328,8 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                     elif (len(class_path) >= 2 and class_path[1] == str('Entities')):
 
+                        #print in_object_class, line
+
                         # Mission - Entities - ItemN /w dataType = "Group"
                         # parse "side" property too
                         if (len(class_path) == 3):
@@ -355,10 +358,18 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                                 in_logic_class = True
 
+                            elif (in_object_class):
 
-                            elif (is_vehicle_class and attr_name == 'type'):
+                                #print class_path
 
-                                vehicles[-1]['type'] = stripped_attr_value
+                                #print line
+
+                                if (attr_name == 'type' and stripped_attr_value in armored):
+
+                                    object_class_attrs['type'] = stripped_attr_value
+
+                                    vehicles.append(object_class_attrs)
+                                    
 
                             #elif (attr_name == 'id' or attr_name == 'type'):
                             #    
@@ -459,19 +470,9 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
                             if (len(class_path) == 4 and class_path[3] == 'Attributes'):
                                 
-                                if (attr_name == 'lock' and stripped_attr_value == 'UNLOCKED'):
+                                if (attr_name == 'lock' or attr_name == 'init' or attr_name == 'fuel'):
 
-                                    vehicles.append({})
-
-                                    #print vehicles
-
-                                    is_vehicle_class = True
-
-                                elif (is_vehicle_class and attr_name == 'init'):
-                                    
-                                    #print line
-
-                                    vehicles[-1]['init'] = stripped_attr_value
+                                    object_class_attrs[attr_name] = stripped_attr_value
 
                         elif (in_logic_class):
 
@@ -689,5 +690,8 @@ with open(path_to_mission_sqm) as opened_mission_file:
     
     check_results['sides'] = sides
 
+    check_results['vehicles'] = vehicles
 
-print json.dumps(check_results, ensure_ascii=False)
+    print json.dumps(check_results, ensure_ascii=False)
+
+    #print vehicles
