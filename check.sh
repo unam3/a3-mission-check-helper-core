@@ -50,8 +50,12 @@ function check_pbo {
         }
     fi
     
-    # for working pipes
-    PYTHONIOENCODING=UTF-8 python2 mission_check.py $mission_folder;
+    # PYTHONIOENCODING=UTF-8 for working pipes
+    if [[ -n $2 ]];
+        then PYTHONIOENCODING=UTF-8 python2 $2mission_check.py $mission_folder;
+        else PYTHONIOENCODING=UTF-8 python2 mission_check.py $mission_folder;
+    fi
+    
 
 
     description_file_path=$mission_folder/Description.ext;
@@ -69,7 +73,7 @@ function check_pbo {
 #    else check_pbo $1;
 #fi
 
-check_pbo $1;
+check_pbo $1 $2;
 
 # TODO: check size of the images
 # filesize in KB
