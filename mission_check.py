@@ -692,6 +692,7 @@ with open(path_to_mission_sqm) as opened_mission_file:
 
     check_results['vehicles'] = vehicles
 
-    print json.dumps(check_results, ensure_ascii=False)
-
-    #print vehicles
+    # this and singlequotes in templates around output wasn't good enough
+    #print json.dumps(check_results, ensure_ascii=False)
+    
+    print json.dumps(json.dumps(check_results, ensure_ascii=False), ensure_ascii=False)
