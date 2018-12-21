@@ -1,55 +1,44 @@
-#print 'Author:', stripped_attr_value
-check_results['mission_attrs']['author'] = stripped_attr_value
+const msg = {
+    mission_attrs: {
+        author: 'Author:',
 
-#print 'Load screen image:', stripped_attr_value
-check_results['mission_attrs']['loadScreen'] = stripped_attr_value
+        loadScreen: 'Load screen image:',
 
-#print 'Сохранение должно быть выключено.'.encode('utf-8')
-check_results['mission_attrs']['w_saving'] = True
+        briefing_name: 'Mission name:',
 
-#print 'Respawn must be set to "Spectator".'
-check_results['mission_attrs']['w_respawn'] = True
+        overview_text: 'Overview text:',
 
-#print 'Only "Spectator" option must be set in the "Rulesets" of the "Multiplayer" attributes'
-check_results['mission_attrs']['w_respawn_rulesets'] = True
+        //wog3_no_auto_long_range_radio: 'Has set no auto long range radio provision',
+        wog3_no_auto_long_range_radio: 'Auto long range radio provision',
 
-#print 'Please turn on "Enable Target Debugging"'
-check_results['mission_attrs']['w_enable_target_debugging'] = True
+        //wmt_auto_med_provision: 'WMT: Auto medicine provision is enabled',
+        wmt_auto_med_provision: 'WMT: Auto medicine provision',
 
-#print 'Mission name:', attr_value
-check_results['mission_attrs']['w_enable_target_debugging'] = attr_value
+        //wmt_side_channel_by_lr: 'WMT: Side channel only by long radio is enabled',
+        wmt_side_channel_by_lr: 'WMT: Side channel only with long radio',
 
-#print 'Название миссии не удовлетворяет шаблону.'.encode('utf-8')
-check_results['mission_attrs']['w_briefing_name'] = True
+        //wmt_disable_fuel_stations: 'WMT: Fuel stations are disabled',
+        wmt_disable_fuel_stations: 'WMT: Fuel stations can refuel',
+    },
+    warnings: {
+        briefing_name: 'Название миссии не удовлетворяет шаблону.',
 
-#print stripped_attr_value.encode('utf-8')
-check_results['mission_attrs']['overview_text'] = stripped_attr_value.encode('utf-8')
+        saving: 'Сохранение должно быть выключено.',
 
-#print 'Wind must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
-check_results['mission_attrs']['w_wind'] = int(float(stripped_semi_attr_value) * 100)
+        respawn: 'Respawn must be set to "Spectator".',
 
-#print 'Rain must be less than or equal to 40%:', int(float(stripped_semi_attr_value) * 100)
-check_results['mission_attrs']['w_rain'] = int(float(stripped_semi_attr_value) * 100)
+        respawn_rulesets: 'Only "Spectator" option must be set in the "Rulesets" of the "Multiplayer" attributes.',
 
-#print 'WMT: Fuel stations are disabled'
-check_results['mission_attrs']['wmt_disable_fuel_stations'] = True
-else         print 'WMT: Fuel stations are enabled'
+        enable_target_debugging: 'Please turn on "Enable Target Debugging".',
 
+        wind: 'Wind must be less than or equal to 40%:',
 
-if (wmt_auto_med_provision):
-print 'WMT: Auto medicine provision is enabled'
+        rain: 'Rain must be less than or equal to 40%:',
 
-check_results['mission_attrs']['wmt_side_channel_by_lr'] = True
-print 'WMT: Side channel by LR is enabled'
+        backpacks_dup: 'has backpack, will dup',
 
-check_results['mission_attrs']['wog3_no_auto_long_range_radio'] = True
-print 'Has set no auto long range radio'
+        has_no_radio: 'has no radio', 
 
-check_results['slots']['total_count'] = total_playable_slots
-print '\nPlayable slots in total:', total_playable_slots
-
-check_results['slots']['total_count'] = total_playable_slots
-print '\nThe number of slots on missions should not exceed 190.'
-
-check_results['warnings']['backpacks_dup'] = init
-print 'has backpack, will dup'
+        vanilla_equipment: 'has vanilla equipment',
+    }
+};
