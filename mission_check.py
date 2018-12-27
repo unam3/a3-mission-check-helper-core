@@ -26,53 +26,6 @@ devnull = open(os.devnull, 'w')
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-#clientside this!
-#def customAttrIsMedic(isMedic):
-#    
-#    str = ''
-#
-#    if (isMedic == '0.0'):
-#        
-#        str = '"None" regular unit medical abillities'
-#
-#    elif (isMedic == '1.0'):
-#        
-#        str = '"Regular medic"'
-#
-#    elif (isMedic == '2.0'):
-#        
-#        str = '"Doctor"'
-#
-#    elif (isMedic is not None):
-#        
-#        str = 'Unusual "ace_isMedic" attribute value: %s' % (isMedic)
-#
-#    return str
-
-#clientside this!
-#def customAttrIsEngineer(isEngineer):
-#    
-#    str = ''
-#
-#    if (isEngineer == '0.0'):
-#        
-#        str = 'Unit Engineer abillities is off'
-#
-#    elif (isEngineer == '1.0'):
-#        
-#        str = '"Engineer"'
-#
-#    elif (isEngineer == '2.0'):
-#        
-#        str = '"Advanced Engineer"'
-#
-#    elif (isEngineer is not None):
-#        
-#        str = 'Unusual "ace_isEngineer" attribute value: %s' % (isEngineer)
-#
-#    return str
-
-
 def checkVanillaEquip(relative_path):
 
     out = None

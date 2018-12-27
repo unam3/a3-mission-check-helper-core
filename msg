@@ -20,6 +20,9 @@ const msg = {
         //wmt_disable_fuel_stations: 'WMT: Fuel stations are disabled',
         wmt_disable_fuel_stations: 'WMT: Fuel stations can refuel',
     },
+    slots: {
+        squad_default_name: 'Aplha 1-',
+    },
     warnings: {
         briefing_name: 'Название миссии не удовлетворяет шаблону.',
 
@@ -40,5 +43,5 @@ const msg = {
         has_no_radio: 'has no radio', 
 
         vanilla_equipment: 'has vanilla equipment',
-    }
+    },
 };
