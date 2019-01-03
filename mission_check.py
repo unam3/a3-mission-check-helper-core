@@ -18,7 +18,7 @@ def check(path_to_mission_folder):
         'mission_attrs': {},
         'vehicles': [],
         'slots': {},
-        'errors': [],
+        'errors': {},
         'warnings': {}
     }
 
@@ -52,7 +52,11 @@ def check(path_to_mission_folder):
 
             if (shi.returncode != 1):
 
-                check_results['errors'].append('checkVanillaEquip return code: %s for %s' % (shi.returncode, init_path))
+                if (not check_results['errors'].get('vanilla_equipment')):
+
+                    check_results['errors']['vanilla_equipment'] = []
+
+                check_results['errors']['vanilla_equipment'].append('return code: %s for %s' % (shi.returncode, init_path))
 
         return '' if (not out) else 'vannila items: ' + out.decode('utf-8')
 

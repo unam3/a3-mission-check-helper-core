@@ -41,7 +41,11 @@ const msg = {
         backpacks_dup: 'has backpack, will dup',
 
         has_no_radio: 'has no radio', 
-
-        vanilla_equipment: 'has vanilla equipment',
     },
+    errors: {
+        vanilla_equipment: 'Has forbidden vanilla equipment:',
+        mission_wasnt_binarized: 'mission.sqm wasn\'t binarized!',
+        wrong_filename: 'Incorrect filename!',
+        extraction_error: 'Extraction error!',
+    }
 };
