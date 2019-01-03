@@ -47,5 +47,6 @@ const msg = {
         mission_wasnt_binarized: 'mission.sqm wasn\'t binarized!',
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
+        unsupported_equipment_init: "Unsupported equipment init"
     }
 };

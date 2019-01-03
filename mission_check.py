@@ -29,13 +29,24 @@ def check(path_to_mission_folder):
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-    def checkVanillaEquip(relative_path):
+    def checkVanillaEquip(init):
+        
+        # proper init example:
+        # call{this call compile preprocessfilelinenumbers ""equipment_infanterie\Russian_army\msv\spn_sniper.sqf"";}
+        
+        # unsupported init example:
+        # call{[this, ""BAND"", ""LEAD""] call compile preprocessFileLineNumbers ""process_units.sqf"";}
 
         out = None
 
         init_path = path_to_mission_folder + '/' + '/'.join(
-            relative_path.split('""')[1].split('\\')
+            init.split('""')[1].split('\\')
         )
+
+        #print path_to_mission_folder
+        #print relative_path
+        #print init_path
+        #print ''
 
         try:
             out = check_output(
@@ -52,11 +63,13 @@ def check(path_to_mission_folder):
 
             if (shi.returncode != 1):
 
-                if (not check_results['errors'].get('vanilla_equipment')):
+                # TODO: put real errors somewhere else. into the log
+                if (not check_results['errors'].get('unsupported_equipment_init')):
 
-                    check_results['errors']['vanilla_equipment'] = []
+                    check_results['errors']['unsupported_equipment_init'] = []
 
-                check_results['errors']['vanilla_equipment'].append('return code: %s for %s' % (shi.returncode, init_path))
+                #'return code: %s for %s' % (shi.returncode, init_path)
+                check_results['errors']['unsupported_equipment_init'].append(init)
 
         return '' if (not out) else 'vannila items: ' + out.decode('utf-8')
 
@@ -617,7 +630,11 @@ def check(path_to_mission_folder):
                         stderr=devnull
                     ))
 
-                    unique_init['vanilla_equipment'] = checkVanillaEquip(init)
+                    vanilla_equipment = checkVanillaEquip(init)
+
+                    if len(vanilla_equipment):
+
+                        unique_init['vanilla_equipment'] = vanilla_equipment
 
             unique_sorted_inits.append(unique_init)
 
