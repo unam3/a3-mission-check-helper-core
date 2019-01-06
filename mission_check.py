@@ -9,6 +9,9 @@ from vehicles_list import armored
 
 from subprocess import call, check_output, CalledProcessError
 
+# https://github.com/michail-nikolaev/task-force-arma-3-radio/blob/master/arma3/%40task_force_radio/addons/task_force_radio_items/config.cpp
+# grep -i itembase
+personal_radios = 'itemradio\\|tf_anprc152\\|tf_anprc148jem\\|tf_fadak\\|tf_anprc154\\|tf_rf7800str\\|tf_pnr1000a'
 
 def check(path_to_mission_folder):
 
@@ -626,7 +629,7 @@ def check(path_to_mission_folder):
                             '-o',
                             # stop after first match
                             #'-m', '1',
-                            'itemradio',
+                            personal_radios,
                             path_to_mission_folder + '/' + '/'.join(
                                 splitted_init[1].split('\\')
                             )
