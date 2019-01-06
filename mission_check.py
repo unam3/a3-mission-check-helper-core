@@ -518,6 +518,8 @@ def check(path_to_mission_folder):
 
         groupLeadersUniqueInits = set()
 
+        inits_with_dup_backpacks = {}
+
         if (wog3_no_auto_long_range_radio):
             
             check_results['mission_attrs']['wog3_no_auto_long_range_radio'] = True
@@ -563,11 +565,8 @@ def check(path_to_mission_folder):
                     stdout=devnull,
                     stderr=devnull
                 ):
-                    if not check_results['warnings']['backpacks_dup']:
 
-                        check_results['warnings']['backpacks_dup'] = []
-                        
-                    check_results['warnings']['backpacks_dup'].append(init)
+                    inits_with_dup_backpacks[init] = True
 
 
         playable_slots = {}
@@ -610,6 +609,12 @@ def check(path_to_mission_folder):
             
             unique_init = {'init': init}
 
+            if inits_with_dup_backpacks.get(init):
+                
+                unique_init['backpack_will_dup'] = True
+
+                check_results['errors']['has_unit_with_backpack_dup'] = True
+
             # None if no init
             if (init):
                 
@@ -621,8 +626,9 @@ def check(path_to_mission_folder):
 
                     unique_init['splitted_init'] = splitted_init[1]
 
+
                     # 0 if found, 1 if not and 2 if error
-                    unique_init['has_no_radio'] = bool(call(
+                    if bool(call(
                         [
                             'grep',
                             '-i',
@@ -636,7 +642,12 @@ def check(path_to_mission_folder):
                         ],
                         stdout=devnull,
                         stderr=devnull
-                    ))
+                    )):
+                        
+                        unique_init['has_no_radio'] = True
+
+                        check_results['warnings']['has_unit_without_personal_radio'] = True
+
 
                     vanilla_equipment = checkVanillaEquip(init)
 

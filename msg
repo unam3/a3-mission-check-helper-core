@@ -41,12 +41,15 @@ const msg = {
         backpacks_dup: 'has backpack, will dup',
 
         has_no_radio: 'has no radio', 
+
+        has_unit_without_personal_radio: 'There is at least one unit withour personal radio.',
     },
     errors: {
         vanilla_equipment: 'Unit init has forbidden vanilla equipment',
         mission_was_not_binarized: 'mission.sqm was not binarized!',
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
-        unsupported_equipment_init: "Unsupported equipment init"
+        unsupported_equipment_init: 'Unsupported equipment init',
+        has_unit_with_backpack_dup: 'Has at least one unit with backpack dup!',
     }
 };
