@@ -43,8 +43,8 @@ const msg = {
         has_no_radio: 'has no radio', 
     },
     errors: {
-        vanilla_equipment: 'Has forbidden vanilla equipment:',
-        mission_wasnt_binarized: 'mission.sqm wasn\'t binarized!',
+        vanilla_equipment: 'Unit init has forbidden vanilla equipment',
+        mission_was_not_binarized: 'mission.sqm was not binarized!',
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
         unsupported_equipment_init: "Unsupported equipment init"

@@ -147,6 +147,7 @@ def check(path_to_mission_folder):
         in_logic_class_custom_attr_side_channel_by_lr = False
 
         for line in opened_mission_file:
+        #for number, line in enumerate(opened_mission_file):
 
             #print line
             #print len(class_path), class_path
@@ -214,9 +215,13 @@ def check(path_to_mission_folder):
                             in_logic_class_custom_attr_side_channel_by_lr = False
 
 
-                class_path.pop()
+                # TODO: for testing purposes
+                #print number, class_path
+                #class_path.pop()
 
-                #print class_path
+                if len(class_path) > 0:
+                    
+                    class_path.pop()
 
             elif (len(class_path)):
 
