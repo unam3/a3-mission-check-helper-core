@@ -74,7 +74,7 @@ def check(path_to_mission_folder):
                 #'return code: %s for %s' % (shi.returncode, init_path)
                 check_results['errors']['unsupported_equipment_init'].append(init)
 
-        return '' if (not out) else 'vannila items: ' + out.decode('utf-8')
+        return '' if (not out) else out.decode('utf-8')
 
 
     def parse_vehicle_init(init):

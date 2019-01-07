@@ -21,12 +21,15 @@ const msg = {
         has_unit_without_personal_radio: 'There is at least one unit without personal radio.',
     },
     errors: {
-        vanilla_equipment: 'Unit init has forbidden vanilla equipment',
         mission_was_not_binarized: 'mission.sqm was not binarized!',
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
+
         unsupported_equipment_init: 'Unsupported equipment init',
+
+        vanilla_equipment: 'Unit init has forbidden vanilla equipment',
         has_unit_with_backpack_dup: 'Has at least one unit with backpack dup!',
+
         //wrong_briefing_name: 'Название миссии не удовлетворяет шаблону.',
         wrong_briefing_name: 'Mission name is incorrect.',
         //saving: 'Сохранение должно быть выключено.',
