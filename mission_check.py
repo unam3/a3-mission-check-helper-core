@@ -288,7 +288,7 @@ def check(path_to_mission_folder):
 
                                 if (not re.match('WOG \d{2,3} (\w+\ )+\d\.\d$', stripped_attr_value, re.UNICODE)):
 
-                                    check_results['mission_attrs']['w_briefing_name'] = True
+                                    check_results['mission_attrs']['wrong_briefing_name'] = True
 
                             # side (color, attack) - side (color, def)
                             elif (attr_name == 'overviewText'):
