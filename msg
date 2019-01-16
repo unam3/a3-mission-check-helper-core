@@ -25,10 +25,11 @@ const msg = {
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
 
-        unsupported_equipment_init: 'Unsupported equipment init',
+        unsupported_equipment_init: 'Unsupported equipment inits',
 
         vanilla_equipment: 'Unit init has forbidden vanilla equipment',
-        has_unit_with_backpack_dup: 'Has at least one unit with backpack dup!',
+        has_unit_with_backpack_dup: 'Has at least one unit with duplicate backpack!',
+        backpack_will_dup: 'backpack will duplicate',
 
         //wrong_briefing_name: 'Название миссии не удовлетворяет шаблону.',
         wrong_briefing_name: 'Mission name is incorrect.',
@@ -39,6 +40,5 @@ const msg = {
         enable_target_debugging: 'Please turn on "Enable Target Debugging".',
         wind: 'Wind must be less than or equal to 40%:',
         rain: 'Rain must be less than or equal to 40%:',
-        backpacks_dup: 'has backpack, will dup',
     },
 };

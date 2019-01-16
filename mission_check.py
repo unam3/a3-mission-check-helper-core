@@ -40,6 +40,14 @@ def check(path_to_mission_folder):
         # unsupported init example:
         # call{[this, ""BAND"", ""LEAD""] call compile preprocessFileLineNumbers ""process_units.sqf"";}
 
+        #TODO: make a test for this
+        if not re.match('^[\w.-\\\]+$', init.split('""')[1], re.UNICODE):
+
+            # throw error
+            print 'path to equipment script is not allowed', init.split('""')[1]
+            #pass
+
+
         out = None
 
         init_path = path_to_mission_folder + '/' + '/'.join(
@@ -64,6 +72,8 @@ def check(path_to_mission_folder):
 
         except CalledProcessError as shi:
 
+            # if 2 — no such file as init_path
+            # 
             if (shi.returncode != 1):
 
                 # TODO: put real errors somewhere else. into the log
@@ -649,6 +659,7 @@ def check(path_to_mission_folder):
                         check_results['warnings']['has_unit_without_personal_radio'] = True
 
 
+                    # catch error and add to check_results['errors']
                     vanilla_equipment = checkVanillaEquip(init)
 
                     if len(vanilla_equipment):
