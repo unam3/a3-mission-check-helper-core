@@ -25,6 +25,7 @@ const msg = {
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
 
+        not_playable_unit: "this unit is not playable!",
         unsupported_equipment_init: 'Unsupported equipment inits',
 
         vanilla_equipment: 'Unit init has forbidden vanilla equipment',
