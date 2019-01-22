@@ -25,12 +25,12 @@ const msg = {
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
 
-        not_playable_unit: "this unit is not playable!",
+        not_playable_unit: 'this unit is not playable!',
         unsupported_equipment_init: 'Unsupported equipment inits',
 
         vanilla_equipment: 'Unit init has forbidden vanilla equipment',
-        has_unit_with_backpack_dup: 'Has at least one unit with duplicate backpack!',
-        backpack_will_dup: 'backpack will duplicate',
+        has_unit_with_backpack_dup: 'Has at least one squad with the squad leader (first unit) with duplicated backpack!',
+        backpack_will_dup: 'backpack from the equipment will spawn behind squad leader\'s back with this init; LRR will be on unit',
 
         //wrong_briefing_name: 'Название миссии не удовлетворяет шаблону.',
         wrong_briefing_name: 'Mission name is incorrect.',
