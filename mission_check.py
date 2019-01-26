@@ -3,11 +3,22 @@
 
 from __future__ import unicode_literals
 
-import re, sys, os, json
+import re, sys, os, json, exceptions
 
 from vehicles_list import armored 
 
 from subprocess import call, check_output, CalledProcessError
+
+
+class CheckVanillaEquipError(exceptions.Exception):
+
+    def __init__(self, value):
+
+        self.value = value
+
+    def __str__(self):
+
+        return repr(self.value)
 
 # https://github.com/michail-nikolaev/task-force-arma-3-radio/blob/master/arma3/%40task_force_radio/addons/task_force_radio_items/config.cpp
 # grep -i itembase
@@ -40,18 +51,21 @@ def check(path_to_mission_folder):
         # unsupported init example:
         # call{[this, ""BAND"", ""LEAD""] call compile preprocessFileLineNumbers ""process_units.sqf"";}
 
-        #TODO: make a test for this
-        if not re.match('^[-\w.\\\]+$', init.split('""')[1], re.UNICODE):
+        if not re.search('this call compile preprocessfilelinenumber', init, re.UNICODE|re.IGNORECASE):
 
-            # throw error: handle and add to errors
-            print 'path to equipment script is not allowed', init.split('""')[1]
-            #pass
+            raise CheckVanillaEquipError(('unsupported_equipment_init', init))
+
+        splitted_init = init.split('""')[1]
+
+        if not re.match('^[-\w.\\\]+$', splitted_init, re.UNICODE):
+
+            raise CheckVanillaEquipError(('unallowed_path_to_equipment_script', splitted_init))
 
 
         out = None
 
         init_path = path_to_mission_folder + '/' + '/'.join(
-            init.split('""')[1].split('\\')
+            splitted_init.split('\\')
         )
 
         #print path_to_mission_folder
@@ -73,16 +87,9 @@ def check(path_to_mission_folder):
         except CalledProcessError as shi:
 
             # if 2 — no such file as init_path
-            # 
             if (shi.returncode != 1):
 
-                # TODO: put real errors somewhere else. into the log
-                if (not check_results['errors'].get('unsupported_equipment_init')):
-
-                    check_results['errors']['unsupported_equipment_init'] = []
-
-                #'return code: %s for %s' % (shi.returncode, init_path)
-                check_results['errors']['unsupported_equipment_init'].append(init)
+                raise CheckVanillaEquipError(('no_such_init_file', init))
 
         return '' if (not out) else out.decode('utf-8')
 
@@ -660,7 +667,25 @@ def check(path_to_mission_folder):
 
 
                     # catch error and add to check_results['errors']
-                    vanilla_equipment = checkVanillaEquip(init)
+                    try:
+
+                        vanilla_equipment = checkVanillaEquip(init)
+
+                    except CheckVanillaEquipError as shi:
+
+                        vanilla_equipment = ''
+
+                        (error, path) = shi.value
+
+                        print error, path
+
+                        if (not check_results['errors'].get(error)):
+
+                            check_results['errors'][error] = []
+
+                        #'return code: %s for %s' % (shi.returncode, init_path)
+                        check_results['errors'][error].append(path)
+
 
                     if len(vanilla_equipment):
 

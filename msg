@@ -27,6 +27,8 @@ const msg = {
 
         not_playable_unit: 'this unit is not playable!',
         unsupported_equipment_init: 'Unsupported equipment inits',
+        unallowed_path_to_equipment_script: 'Unallowed path to equipment script. Only alphabetical, numerical characters, "\", "-", "." are ok.',
+        no_such_init_file: 'There is no such file!',
 
         vanilla_equipment: 'Unit init has forbidden vanilla equipment',
         has_unit_with_backpack_dup: 'Has at least one squad with the squad leader (first unit) with duplicated backpack!',
