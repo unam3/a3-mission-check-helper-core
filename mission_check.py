@@ -41,9 +41,9 @@ def check(path_to_mission_folder):
         # call{[this, ""BAND"", ""LEAD""] call compile preprocessFileLineNumbers ""process_units.sqf"";}
 
         #TODO: make a test for this
-        if not re.match('^[\w.-\\\]+$', init.split('""')[1], re.UNICODE):
+        if not re.match('^[-\w.\\\]+$', init.split('""')[1], re.UNICODE):
 
-            # throw error
+            # throw error: handle and add to errors
             print 'path to equipment script is not allowed', init.split('""')[1]
             #pass
 
