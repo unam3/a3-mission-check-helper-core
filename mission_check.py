@@ -424,10 +424,9 @@ def check(path_to_mission_folder):
 
                                     sides[group_side][-1]['units'][-1][attr_name] = stripped_semi_attr_value
                                 
-                                # isPlayable propert present only if slot is playable 
-                                elif (attr_name == 'isPlayable' and stripped_semi_attr_value == '1'):
+                                elif ((attr_name == 'isPlayable' or attr_name == 'isPlayer') and stripped_semi_attr_value == '1'):
 
-                                    sides[group_side][-1]['units'][-1][attr_name] = True
+                                    sides[group_side][-1]['units'][-1]['isPlayable'] = True
 
                                 # Mission - Entities - ItemN /w dataType = "Group" - Entities - ItemN - CustomAttributes
                                 elif (len(class_path) == 7 and class_path[5] == 'CustomAttributes'
