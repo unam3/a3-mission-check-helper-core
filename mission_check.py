@@ -467,9 +467,13 @@ def check(path_to_mission_folder):
 
                                 if (len(class_path) == 4 and class_path[3] == 'Attributes'):
                                     
-                                    if (attr_name == 'lock' or attr_name == 'init' or attr_name == 'fuel'):
+                                    if (attr_name == 'lock' or attr_name == 'init' or attr_name == 'description'):
 
                                         object_class_attrs[attr_name] = stripped_attr_value
+
+                                    elif (attr_name == 'health' or attr_name == 'ammo' or attr_name == 'fuel'):
+
+                                        object_class_attrs[attr_name] = int(float(stripped_semi_attr_value) * 100)
 
                             elif (in_logic_class):
 
