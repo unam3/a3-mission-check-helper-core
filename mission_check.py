@@ -156,6 +156,8 @@ def check(path_to_mission_folder):
         # vehicles
         in_object_class = False
 
+        object_class_custom_attr = False
+
         object_class_attrs = {}
 
         in_logic_class = False
@@ -206,11 +208,21 @@ def check(path_to_mission_folder):
 
                     in_unit_custom_attrs_engineer = False
 
-                elif (in_object_class and len(class_path) == 3):
+                elif (in_object_class):
 
-                    in_object_class = False
+                    if len(class_path) == 3:
 
-                    object_class_attrs = {}
+                        in_object_class = False
+
+                        object_class_attrs = {}
+
+                    elif (object_class_custom_attr and len(class_path) == 5):
+
+                        #print 'term', len(class_path), class_path
+
+                        #print line
+
+                        object_class_custom_attr = False
 
                 elif (in_logic_class):
 
@@ -474,6 +486,34 @@ def check(path_to_mission_folder):
                                     elif (attr_name == 'health' or attr_name == 'ammo' or attr_name == 'fuel'):
 
                                         object_class_attrs[attr_name] = int(float(stripped_semi_attr_value) * 100)
+
+                                #[u'Mission', u'Entities', u'Item3', u'CustomAttributes', u'Attribute0']
+                                #property = "ace_isMedicalVehicle";
+
+
+                                elif (len(class_path) == 5 and class_path[3] == 'CustomAttributes'):
+                                    
+
+                                    if (attr_name == 'property' and
+                                        (stripped_attr_value == 'ace_isMedicalVehicle' or
+                                        stripped_attr_value == 'ace_isRepairVehicle')
+                                    ):
+
+                                        #print stripped_attr_value
+
+                                        object_class_custom_attr = stripped_attr_value
+
+                                #[u'Mission', u'Entities', u'Item3', u'CustomAttributes', u'Attribute1', u'Value', u'data']
+                                #value = 1.0;
+
+                                elif (object_class_custom_attr and len(class_path) == 7 and
+                                    class_path[5] == 'Value' and class_path[6] == 'data'):
+
+                                        #print 'object_class_custom_attr', class_path
+
+                                        #print line
+
+                                        vehicles[-1][object_class_custom_attr] = stripped_semi_attr_value
 
                             elif (in_logic_class):
 
