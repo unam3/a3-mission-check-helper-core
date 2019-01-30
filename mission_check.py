@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import re, sys, os, json, exceptions
 
-from vehicles_list import armored 
+from vehicles_n_boxes import box, air, land_vehicle, ship
 
 from subprocess import call, check_output, CalledProcessError
 
@@ -374,7 +374,12 @@ def check(path_to_mission_folder):
 
                                     #print line
 
-                                    if (attr_name == 'type' and stripped_attr_value in armored):
+                                    if (attr_name == 'type' and (
+                                        box.get(stripped_attr_value) or
+                                        air.get(stripped_attr_value) or
+                                        land_vehicle.get(stripped_attr_value)
+                                        or ship.get(stripped_attr_value)
+                                    )):
 
                                         object_class_attrs['type'] = stripped_attr_value
 
