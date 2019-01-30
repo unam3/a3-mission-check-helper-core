@@ -374,16 +374,29 @@ def check(path_to_mission_folder):
 
                                     #print line
 
-                                    if (attr_name == 'type' and (
-                                        box.get(stripped_attr_value) or
-                                        air.get(stripped_attr_value) or
-                                        land_vehicle.get(stripped_attr_value)
-                                        or ship.get(stripped_attr_value)
-                                    )):
+                                    if attr_name == 'type':
+                                        
+                                        vehicle_name = (
+                                            air.get(stripped_attr_value) or
+                                            land_vehicle.get(stripped_attr_value)
+                                            or ship.get(stripped_attr_value)
+                                        )
 
-                                        object_class_attrs['type'] = stripped_attr_value
+                                        box_name = False
 
-                                        vehicles.append(object_class_attrs)
+                                        if not vehicle_name:
+
+                                            box_name = box.get(stripped_attr_value)
+
+                                            object_class_attrs['is_box'] = True
+
+                                        if vehicle_name or box_name:
+
+                                            object_class_attrs['type'] = stripped_attr_value
+
+                                            object_class_attrs['name'] = vehicle_name or box_name
+
+                                            vehicles.append(object_class_attrs)
                                         
 
                                 #elif (attr_name == 'id' or attr_name == 'type'):
@@ -770,7 +783,13 @@ def check(path_to_mission_folder):
         
         check_results['sides'] = sides
 
-        check_results['vehicles'] = vehicles
+        #check_results['vehicles'] = vehicles
+
+        #filters boxes without an init
+        check_results['vehicles_static_boxes'] = filter(
+            lambda vdict: not (vdict.get('is_box') and not vdict.get('init')),
+            vehicles
+        )
 
         return check_results
 
