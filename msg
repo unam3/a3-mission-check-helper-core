@@ -21,7 +21,7 @@ const msg = {
         has_unit_without_personal_radio: 'There is at least one unit without personal radio.',
     },
     errors: {
-        mission_was_not_binarized: 'mission.sqm was not binarized!',
+        mission_was_not_binarized: 'mission.sqm must be binarized!',
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
 
