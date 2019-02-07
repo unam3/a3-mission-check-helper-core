@@ -44,16 +44,6 @@ def check(path_to_mission_folder):
 
 
     def checkVanillaEquip(init):
-        
-        # proper init example:
-        # call{this call compile preprocessfilelinenumbers ""equipment_infanterie\Russian_army\msv\spn_sniper.sqf"";}
-        
-        # unsupported init example:
-        # call{[this, ""BAND"", ""LEAD""] call compile preprocessFileLineNumbers ""process_units.sqf"";}
-
-        if not re.search('this call compile preprocessfilelinenumber', init, re.UNICODE|re.IGNORECASE):
-
-            raise CheckVanillaEquipError(('unsupported_equipment_init', init))
 
         splitted_init = init.split('""')[1]
 
@@ -695,62 +685,82 @@ def check(path_to_mission_folder):
 
             # None if no init
             if (init):
-                
+
                 #print 'init:', init
+                
+                # proper init example:
+                # call{this call compile preprocessfilelinenumbers ""equipment_infanterie\Russian_army\msv\spn_sniper.sqf"";}
+                
+                # unsupported (Crabe-) init example:
+                # call{[this, ""BAND"", ""LEAD""] call compile preprocessFileLineNumbers ""process_units.sqf"";}
 
-                splitted_init = init.split('""')
+                if not re.search('this call compile preprocessfilelinenumber', init, re.UNICODE|re.IGNORECASE):
 
-                if (len(splitted_init) > 1):
+                    error = 'unsupported_equipment_init'
 
-                    unique_init['splitted_init'] = splitted_init[1]
+                    if (not check_results['errors'].get(error)):
 
+                        check_results['errors'][error] = []
 
-                    # 0 if found, 1 if not and 2 if error
-                    if bool(call(
-                        [
-                            'grep',
-                            '-i',
-                            '-o',
-                            # stop after first match
-                            #'-m', '1',
-                            personal_radios,
-                            path_to_mission_folder + '/' + '/'.join(
-                                splitted_init[1].split('\\')
-                            )
-                        ],
-                        stdout=devnull,
-                        stderr=devnull
-                    )):
-                        
-                        unique_init['has_no_radio'] = True
+                    check_results['errors'][error].append(init)
 
-                        check_results['warnings']['has_unit_without_personal_radio'] = True
+                    unique_init['unsupported_equipment_init'] = True
+
+                else:
+
+                    splitted_init = init.split('""')
+
+                    if (len(splitted_init) > 1):
+
+                        unique_init['splitted_init'] = splitted_init[1]
 
 
-                    # catch error and add to check_results['errors']
-                    try:
+                        # 0 if found, 1 if not and 2 if error
+                        if bool(call(
+                            [
+                                'grep',
+                                '-i',
+                                '-o',
+                                # stop after first match
+                                #'-m', '1',
+                                personal_radios,
+                                path_to_mission_folder + '/' + '/'.join(
+                                    splitted_init[1].split('\\')
+                                )
+                            ],
+                            stdout=devnull,
+                            stderr=devnull
+                        )):
+                            
+                            unique_init['has_no_radio'] = True
 
-                        vanilla_equipment = checkVanillaEquip(init)
-
-                    except CheckVanillaEquipError as shi:
-
-                        vanilla_equipment = ''
-
-                        (error, path) = shi.value
-
-                        print error, path
-
-                        if (not check_results['errors'].get(error)):
-
-                            check_results['errors'][error] = []
-
-                        #'return code: %s for %s' % (shi.returncode, init_path)
-                        check_results['errors'][error].append(path)
+                            check_results['warnings']['has_unit_without_personal_radio'] = True
 
 
-                    if len(vanilla_equipment):
+                        # catch error and add to check_results['errors']
+                        try:
 
-                        unique_init['vanilla_equipment'] = vanilla_equipment
+                            vanilla_equipment = checkVanillaEquip(init)
+
+                        except CheckVanillaEquipError as shi:
+
+                            vanilla_equipment = ''
+
+                            (error, path) = shi.value
+
+                            print error, path
+
+                            if (not check_results['errors'].get(error)):
+
+                                check_results['errors'][error] = []
+
+                            #'return code: %s for %s' % (shi.returncode, init_path)
+                            check_results['errors'][error].append(path)
+
+
+                        if len(vanilla_equipment):
+
+                            unique_init['vanilla_equipment'] = vanilla_equipment
 
             unique_sorted_inits.append(unique_init)
 
