@@ -641,7 +641,7 @@ def check(path_to_mission_folder):
 
         uniqueUnitInits = set()
 
-        # get slots count
+        # get slots count, uniq inits
         for side, groups in sides.items():
             
             if (not playable_slots.get(side)):
@@ -652,7 +652,12 @@ def check(path_to_mission_folder):
 
                 for unit in group['units']:
 
-                    uniqueUnitInits.add(unit.get('init'))
+                    init = unit.get('init')
+
+                    # in case of use predefined structures (wog/rhs)
+                    if (init):
+
+                        uniqueUnitInits.add(init)
 
                     if (unit.get('isPlayable')):
 
