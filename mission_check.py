@@ -438,13 +438,14 @@ def check(path_to_mission_folder):
 
                                     sides[group_side][-1]['units'][-1][attr_name] = stripped_attr_value
                                 
-                                if (attr_name == 'id'):
+                                elif (attr_name == 'id'):
 
                                     #print stripped_semi_attr_value
 
                                     sides[group_side][-1]['units'][-1][attr_name] = stripped_semi_attr_value
                                 
-                                elif ((attr_name == 'isPlayable' or attr_name == 'isPlayer') and stripped_semi_attr_value == '1'):
+                                elif ((attr_name == 'isPlayable' or attr_name == 'isPlayer')
+                                    and stripped_semi_attr_value == '1'):
 
                                     sides[group_side][-1]['units'][-1]['isPlayable'] = True
 
@@ -469,12 +470,19 @@ def check(path_to_mission_folder):
                                     
                                     sides[group_side][-1]['units'][-1]['ace_isMedic'] = stripped_semi_attr_value
 
-                                elif (in_unit_custom_attrs_engineer and len(class_path) == 9 and class_path[7] == 'Value'
-                                    and class_path[8] == 'data'):
+                                elif (in_unit_custom_attrs_engineer and len(class_path) == 9
+                                    and class_path[7] == 'Value' and class_path[8] == 'data'):
 
                                     #print 'ace_isEngineer', stripped_semi_attr_value
 
                                     sides[group_side][-1]['units'][-1]['ace_isEngineer'] = stripped_semi_attr_value
+
+                                elif (len(class_path) == 7 and class_path[5] == 'Attributes'
+                                    and class_path[6] == 'Inventory'):
+                                    
+                                    sides[group_side][-1]['units'][-1]['has_inventory'] = True
+
+                                    check_results['warnings']['has_unit_with_inventory'] = True
 
                                 #print class_path
                                 #print line
@@ -773,29 +781,6 @@ def check(path_to_mission_folder):
 
         check_results['slots']['unique_inits'] = unique_sorted_inits
 
-
-        #clientside this!
-        #for side, groups in sides.items():
-        #    
-        #    print '\n', side, 'has', playable_slots[side], 'playable slots'
-
-        #    for group in groups:
-
-        #        print '\nGROUP ID:', group.get('groupID') or 'group without groupID'
-
-        #        for unit in group['units']:
-
-        #            if (unit.get('isPlayable')):
-
-        #                print '\n', unit['description'], unit['type'],  unit.get('ace_isEngineer'),\ unit.get('ace_isMedic')
-
-        #                print unit.get('init')
-
-        #            else:
-        #                
-        #                print 'next unit is not playable!', unit
-
-        
         check_results['sides'] = sides
 
         #check_results['vehicles'] = vehicles
