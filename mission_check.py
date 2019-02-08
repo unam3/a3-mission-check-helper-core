@@ -30,7 +30,6 @@ def check(path_to_mission_folder):
 
     check_results = {
         'mission_attrs': {},
-        'vehicles': [],
         'slots': {},
         'errors': {},
         'warnings': {}
@@ -338,13 +337,15 @@ def check(path_to_mission_folder):
 
                                     in_group_class = True
 
-                                elif (attr_name == 'side' and (stripped_attr_value == 'West'
+                                elif (in_group_class and attr_name == 'side' and (stripped_attr_value == 'West'
                                     or stripped_attr_value == 'East' or stripped_attr_value == 'Independent')):
 
                                     group_side = stripped_attr_value
 
                                     if (not sides.get(group_side)):
                                         sides[group_side] = []
+
+                                    #print len(sides[group_side]), class_path
 
                                     sides[group_side].append({'units': []})
 
