@@ -25,6 +25,33 @@ class CheckVanillaEquipError(CustomError): pass
 class GetMissionFilesListError(CustomError): pass
 
 
+def getMissionFilesList(path, devnull):
+
+    out = None
+
+    try:
+        out = check_output(
+            [
+                'find',
+                path,
+                # list only files
+                '-type', 'f'
+            ],
+            stderr=devnull
+        )
+
+    except CalledProcessError as shi:
+
+        print shi
+
+        raise GetMissionFilesListError(('eeeh?', path))
+
+    return None if (not out) else map(
+        lambda fullpath: fullpath.split(path + '/')[1],
+        out.decode('utf-8').splitlines()
+    )
+
+
 # https://github.com/michail-nikolaev/task-force-arma-3-radio/blob/master/arma3/%40task_force_radio/addons/task_force_radio_items/config.cpp
 # grep -i itembase
 personal_radios = 'itemradio\\|tf_anprc152\\|tf_anprc148jem\\|tf_fadak\\|tf_anprc154\\|tf_rf7800str\\|tf_pnr1000a'
@@ -47,72 +74,42 @@ def check(path_to_mission_folder):
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-    def getMissionFilesList(path):
+    missionFilesListLowercaseMapping = {}
 
-        out = None
+    for path_to_file in getMissionFilesList(path_to_mission_folder, devnull):
 
-        try:
-            out = check_output(
-                [
-                    'find',
-                    path,
-                    # list only files
-                    '-type', 'f'
-                ],
-                stderr=devnull
-            )
+        missionFilesListLowercaseMapping[path_to_file.lower()] = path_to_file
 
-        except CalledProcessError as shi:
-
-            print shi
-
-            raise GetMissionFilesListError(('eeeh?', path))
-
-        return None if (not out) else map(
-            lambda fullpath: fullpath.split(path + '/')[1],
-            out.decode('utf-8').splitlines()
-        )
-
-    #print getMissionFilesList(path_to_mission_folder)
-
-    global missionFilesListLowercaseMapping
-
-    missionFilesListLowercaseMapping = None
+    #print missionFilesListLowercaseMapping
 
 
-    def checkVanillaEquip(init, useMissionFilesListLowercaseMapping=False):
+    def checkVanillaEquip(init):
 
         splitted_init = init.split('""')[1]
 
-        #print splitted_init, useMissionFilesListLowercaseMapping
+        #print splitted_init
 
-        if not re.match('^[-\w.\\\]+$', splitted_init, re.UNICODE) and not useMissionFilesListLowercaseMapping:
+        if not re.match('^[-\w.\\\]+$', splitted_init, re.UNICODE):
 
             raise CheckVanillaEquipError(('unallowed_path_to_equipment_script', splitted_init))
 
-
-        out = None
 
         proper_slashes_splitted_init = '/'.join(
             splitted_init.split('\\')
         )
 
-        if useMissionFilesListLowercaseMapping:
+        init_in_fs = missionFilesListLowercaseMapping.get(proper_slashes_splitted_init.lower())
 
-            global missionFilesListLowercaseMapping
+        #print proper_slashes_splitted_init, init_in_fs
 
-            init_in_fs = missionFilesListLowercaseMapping.get(proper_slashes_splitted_init.lower())
-
-            init_path = path_to_mission_folder + '/' + init_in_fs
-
-        else:
-
-            init_path = path_to_mission_folder + '/' + proper_slashes_splitted_init
+        init_path = path_to_mission_folder + '/' + init_in_fs
 
         #print path_to_mission_folder
         #print relative_path
-        print init_path
+        #print init_path
         #print ''
+
+        out = None
 
         try:
             out = check_output(
@@ -127,26 +124,11 @@ def check(path_to_mission_folder):
 
         except CalledProcessError as shi:
 
+            # shi.returncode == 1 — grep was not found any matching substring in file
             # if 2 — no such file as init_path
             if (shi.returncode != 1):
 
-                #global missionFilesListLowercaseMapping
-
-                if not missionFilesListLowercaseMapping:
-
-                    missionFilesListLowercaseMapping = {}
-
-                    for path_to_file in getMissionFilesList(path_to_mission_folder):
-
-                        missionFilesListLowercaseMapping[path_to_file.lower()] = path_to_file
-
-                if not useMissionFilesListLowercaseMapping:
-                 
-                     out = checkVanillaEquip(init, useMissionFilesListLowercaseMapping=True)
-
-                else:
-                    
-                    raise CheckVanillaEquipError(('no_such_init_file', init))
+                raise CheckVanillaEquipError(('no_such_init_file', init))
 
         return '' if (not out) else out.decode('utf-8')
 
@@ -645,8 +627,10 @@ def check(path_to_mission_folder):
         check_results['mission_attrs']['wmt_side_channel_by_lr'] = wmt_side_channel_by_lr
 
 
+        init_sqf = missionFilesListLowercaseMapping.get('init.sqf')
+
         # 0 if found, 1 if not and 2 if error
-        wog3_no_auto_long_range_radio = True if not call(
+        wog3_no_auto_long_range_radio = True if init_sqf and not call(
             [
                 'grep',
                 #'-i',
@@ -654,7 +638,7 @@ def check(path_to_mission_folder):
                 # stop after first match
                 #'-m', '1',
                 'wog3_no_auto_long_range_radio = true;',
-                path_to_mission_folder + '/init.sqf'
+                path_to_mission_folder + '/' + init_sqf
             ],
             stdout=devnull,
             stderr=devnull
@@ -691,7 +675,11 @@ def check(path_to_mission_folder):
 
             for init in groupLeadersUniqueInits:
                 
-                #print init
+                lowercase_init = missionFilesListLowercaseMapping.get(
+                   '/'.join(
+                        init.split('""')[1].split('\\')
+                    ).lower()
+                )
 
                 # 0 if found, 1 if not and 2 if error
                 if not call(
@@ -703,9 +691,7 @@ def check(path_to_mission_folder):
                         '-m', '1',
                         #'^_this addBackpack',
                         'addBackpack',
-                        path_to_mission_folder + '/' + '/'.join(
-                            init.split('""')[1].split('\\')
-                        )
+                        path_to_mission_folder + '/' + lowercase_init
                     ],
                     stdout=devnull,
                     stderr=devnull
@@ -796,9 +782,14 @@ def check(path_to_mission_folder):
 
                         unique_init['splitted_init'] = splitted_init[1]
 
+                        lowercase_init = missionFilesListLowercaseMapping.get(
+                           '/'.join(
+                                splitted_init[1].split('\\')
+                            ).lower()
+                        )
 
                         # 0 if found, 1 if not and 2 if error
-                        if bool(call(
+                        if lowercase_init and bool(call(
                             [
                                 'grep',
                                 '-i',
@@ -806,9 +797,7 @@ def check(path_to_mission_folder):
                                 # stop after first match
                                 #'-m', '1',
                                 personal_radios,
-                                path_to_mission_folder + '/' + '/'.join(
-                                    splitted_init[1].split('\\')
-                                )
+                                path_to_mission_folder + '/' + lowercase_init
                             ],
                             stdout=devnull,
                             stderr=devnull
