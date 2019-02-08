@@ -10,7 +10,7 @@ from vehicles_n_boxes import box, air, land_vehicle, ship
 from subprocess import call, check_output, CalledProcessError
 
 
-class CheckVanillaEquipError(exceptions.Exception):
+class CustomError(exceptions.Exception):
 
     def __init__(self, value):
 
@@ -19,6 +19,11 @@ class CheckVanillaEquipError(exceptions.Exception):
     def __str__(self):
 
         return repr(self.value)
+
+class CheckVanillaEquipError(CustomError): pass
+
+class GetMissionFilesListError(CustomError): pass
+
 
 # https://github.com/michail-nikolaev/task-force-arma-3-radio/blob/master/arma3/%40task_force_radio/addons/task_force_radio_items/config.cpp
 # grep -i itembase
@@ -42,24 +47,71 @@ def check(path_to_mission_folder):
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-    def checkVanillaEquip(init):
+    def getMissionFilesList(path):
+
+        out = None
+
+        try:
+            out = check_output(
+                [
+                    'find',
+                    path,
+                    # list only files
+                    '-type', 'f'
+                ],
+                stderr=devnull
+            )
+
+        except CalledProcessError as shi:
+
+            print shi
+
+            raise GetMissionFilesListError(('eeeh?', path))
+
+        return None if (not out) else map(
+            lambda fullpath: fullpath.split(path + '/')[1],
+            out.decode('utf-8').splitlines()
+        )
+
+    #print getMissionFilesList(path_to_mission_folder)
+
+    global missionFilesListLowercaseMapping
+
+    missionFilesListLowercaseMapping = None
+
+
+    def checkVanillaEquip(init, useMissionFilesListLowercaseMapping=False):
 
         splitted_init = init.split('""')[1]
 
-        if not re.match('^[-\w.\\\]+$', splitted_init, re.UNICODE):
+        #print splitted_init, useMissionFilesListLowercaseMapping
+
+        if not re.match('^[-\w.\\\]+$', splitted_init, re.UNICODE) and not useMissionFilesListLowercaseMapping:
 
             raise CheckVanillaEquipError(('unallowed_path_to_equipment_script', splitted_init))
 
 
         out = None
 
-        init_path = path_to_mission_folder + '/' + '/'.join(
+        proper_slashes_splitted_init = '/'.join(
             splitted_init.split('\\')
         )
 
+        if useMissionFilesListLowercaseMapping:
+
+            global missionFilesListLowercaseMapping
+
+            init_in_fs = missionFilesListLowercaseMapping.get(proper_slashes_splitted_init.lower())
+
+            init_path = path_to_mission_folder + '/' + init_in_fs
+
+        else:
+
+            init_path = path_to_mission_folder + '/' + proper_slashes_splitted_init
+
         #print path_to_mission_folder
         #print relative_path
-        #print init_path
+        print init_path
         #print ''
 
         try:
@@ -78,7 +130,23 @@ def check(path_to_mission_folder):
             # if 2 — no such file as init_path
             if (shi.returncode != 1):
 
-                raise CheckVanillaEquipError(('no_such_init_file', init))
+                #global missionFilesListLowercaseMapping
+
+                if not missionFilesListLowercaseMapping:
+
+                    missionFilesListLowercaseMapping = {}
+
+                    for path_to_file in getMissionFilesList(path_to_mission_folder):
+
+                        missionFilesListLowercaseMapping[path_to_file.lower()] = path_to_file
+
+                if not useMissionFilesListLowercaseMapping:
+                 
+                     out = checkVanillaEquip(init, useMissionFilesListLowercaseMapping=True)
+
+                else:
+                    
+                    raise CheckVanillaEquipError(('no_such_init_file', init))
 
         return '' if (not out) else out.decode('utf-8')
 
