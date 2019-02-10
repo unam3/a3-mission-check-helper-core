@@ -53,8 +53,11 @@ def getMissionFilesList(path, devnull):
 
 
 # https://github.com/michail-nikolaev/task-force-arma-3-radio/blob/master/arma3/%40task_force_radio/addons/task_force_radio_items/config.cpp
-# grep -i itembase
+# grep ItemRadio
 personal_radios = 'itemradio\\|tf_anprc152\\|tf_anprc148jem\\|tf_fadak\\|tf_anprc154\\|tf_rf7800str\\|tf_pnr1000a'
+
+# grep TFAR_Bag_Base
+backpack_radios = 'TFAR_Bag_Base\\|tf_rt1523g\\|tf_anprc155\\|tf_mr3000\\|tf_bussole\\|tf_anarc210\\|tf_anarc164\\|tf_mr6000l'
 
 def check(path_to_mission_folder):
 
@@ -645,59 +648,66 @@ def check(path_to_mission_folder):
         ) else False
 
 
-        groupLeadersUniqueInits = set()
-
-        inits_with_dup_backpacks = {}
-
         if (wog3_no_auto_long_range_radio):
             
             check_results['mission_attrs']['wog3_no_auto_long_range_radio'] = True
 
-        else:
+
+        groupLeadersUniqueInits = set()
+
+        inits_with_dup_backpacks = {}
+
+        group_leaders_without_lrr = {}
+
+        # Check equpment of first units in squads (team leaders) for backpacks
+        for side in sides:
             
-            # Check equpment of first units in squads (team leaders) for backpacks
-            # If unit has backpack, then radio will be spawned behind him
-            for side in sides:
-                
-                for group in sides[side]:
+            for group in sides[side]:
 
-                    #print side, group.get('groupID') or 'group without groupID', group['units'][0]
+                #print side, group.get('groupID') or 'group without groupID', group['units'][0]
 
-                    init = group['units'][0].get('init')
+                init = group['units'][0].get('init')
 
-                    if (init):
-                        
-                        groupLeadersUniqueInits.add(init)
+                if (init):
+                    
+                    groupLeadersUniqueInits.add(init)
 
-                    #else:
-                    #    
-                    #    print '^^^ has no init'
+                #else:
+                #    
+                #    print '^^^ has no init'
 
-            for init in groupLeadersUniqueInits:
-                
-                lowercase_init = missionFilesListLowercaseMapping.get(
-                   '/'.join(
-                        init.split('""')[1].split('\\')
-                    ).lower()
-                )
+        for init in groupLeadersUniqueInits:
+            
+            lowercase_init = missionFilesListLowercaseMapping.get(
+               '/'.join(
+                    init.split('""')[1].split('\\')
+                ).lower()
+            )
 
-                # 0 if found, 1 if not and 2 if error
-                if not call(
-                    [
-                        'grep',
-                        '-i',
-                        '-o',
-                        # stop after first match
-                        '-m', '1',
-                        #'^_this addBackpack',
-                        'addBackpack',
-                        path_to_mission_folder + '/' + lowercase_init
-                    ],
-                    stdout=devnull,
-                    stderr=devnull
-                ):
+            # 0 if found, 1 if not and 2 if error
+            if not call(
+                [
+                    'grep',
+                    '-i',
+                    '-o',
+                    # stop after first match
+                    '-m', '1',
+                    #'^_this addBackpack',
+                    'addBackpack' if not wog3_no_auto_long_range_radio else backpack_radios,
+                    path_to_mission_folder + '/' + lowercase_init
+                ],
+                stdout=devnull,
+                stderr=devnull
+            ):
 
-                    inits_with_dup_backpacks[init] = True
+                # If unit has backpack, then radio will be spawned behind him
+                if not wog3_no_auto_long_range_radio:
+
+                    inits_with_dup_backpacks[init] = true
+
+            elif wog3_no_auto_long_range_radio:
+
+                group_leaders_without_lrr[init] = True
 
 
         playable_slots = {}
@@ -750,6 +760,12 @@ def check(path_to_mission_folder):
                 unique_init['backpack_will_dup'] = True
 
                 check_results['errors']['has_unit_with_backpack_dup'] = True
+
+            if group_leaders_without_lrr.get(init):
+                
+                unique_init['group_leader_without_lrr'] = True
+
+                check_results['warnings']['has_group_leader_without_lrr'] = True
 
             # None if no init
             if (init):
