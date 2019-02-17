@@ -647,74 +647,18 @@ def check(path_to_mission_folder):
             stderr=devnull
         ) else False
 
-
         if (wog3_no_auto_long_range_radio):
             
             check_results['mission_attrs']['wog3_no_auto_long_range_radio'] = True
 
 
-        groupLeadersUniqueInits = set()
-
-        inits_with_dup_backpacks = {}
-
-        group_leaders_without_lrr = {}
-
-        # Check equpment of first units in squads (team leaders) for backpacks
-        for side in sides:
-            
-            for group in sides[side]:
-
-                #print side, group.get('groupID') or 'group without groupID', group['units'][0]
-
-                init = group['units'][0].get('init')
-
-                if (init):
-                    
-                    groupLeadersUniqueInits.add(init)
-
-                #else:
-                #    
-                #    print '^^^ has no init'
-
-        for init in groupLeadersUniqueInits:
-            
-            lowercase_init = missionFilesListLowercaseMapping.get(
-               '/'.join(
-                    init.split('""')[1].split('\\')
-                ).lower()
-            )
-
-            # 0 if found, 1 if not and 2 if error
-            if not call(
-                [
-                    'grep',
-                    '-i',
-                    '-o',
-                    # stop after first match
-                    '-m', '1',
-                    #'^_this addBackpack',
-                    'addBackpack' if not wog3_no_auto_long_range_radio else backpack_radios,
-                    path_to_mission_folder + '/' + lowercase_init
-                ],
-                stdout=devnull,
-                stderr=devnull
-            ):
-
-                # If unit has backpack, then radio will be spawned behind him
-                if not wog3_no_auto_long_range_radio:
-
-                    inits_with_dup_backpacks[init] = true
-
-            elif wog3_no_auto_long_range_radio:
-
-                group_leaders_without_lrr[init] = True
-
-
+        # get slots count, uniq inits
         playable_slots = {}
 
         uniqueUnitInits = set()
 
-        # get slots count, uniq inits
+        groupLeadersUniqueInits = set()
+
         for side, groups in sides.items():
             
             if (not playable_slots.get(side)):
@@ -723,7 +667,7 @@ def check(path_to_mission_folder):
 
             for group in groups:
 
-                for unit in group['units']:
+                for i, unit in enumerate(group['units']):
 
                     init = unit.get('init')
 
@@ -731,6 +675,10 @@ def check(path_to_mission_folder):
                     if (init):
 
                         uniqueUnitInits.add(init)
+
+                        if i == 0:
+
+                            groupLeadersUniqueInits.add(init)
 
                     if (unit.get('isPlayable')):
 
@@ -745,27 +693,15 @@ def check(path_to_mission_folder):
         #    check_results['slots']['too_much_slots'] = True
 
 
-        sorted_inits = sorted(uniqueUnitInits)
+        sorted_uniq_inits = sorted(uniqueUnitInits)
 
-        #print sorted_inits
+        #print sorted_uniq_inits
 
-        unique_sorted_inits = []
+        unique_inits_attrs = []
         
-        for init in sorted_inits:
+        for init in sorted_uniq_inits:
             
-            unique_init = {'init': init}
-
-            if inits_with_dup_backpacks.get(init):
-                
-                unique_init['backpack_will_dup'] = True
-
-                check_results['errors']['has_unit_with_backpack_dup'] = True
-
-            if group_leaders_without_lrr.get(init):
-                
-                unique_init['group_leader_without_lrr'] = True
-
-                check_results['warnings']['has_group_leader_without_lrr'] = True
+            unique_init_attrs = {'init': init}
 
             # None if no init
             if (init):
@@ -788,7 +724,7 @@ def check(path_to_mission_folder):
 
                     check_results['errors'][error].append(init)
 
-                    unique_init['unsupported_equipment_init'] = True
+                    unique_init_attrs['unsupported_equipment_init'] = True
 
                 else:
 
@@ -796,7 +732,7 @@ def check(path_to_mission_folder):
 
                     if (len(splitted_init) > 1):
 
-                        unique_init['splitted_init'] = splitted_init[1]
+                        unique_init_attrs['splitted_init'] = splitted_init[1]
 
                         lowercase_init = missionFilesListLowercaseMapping.get(
                            '/'.join(
@@ -804,7 +740,42 @@ def check(path_to_mission_folder):
                             ).lower()
                         )
 
-                        # 0 if found, 1 if not and 2 if error
+
+                        # Check team leaders (first unit in squad) backpacks/LRR
+                        if init in groupLeadersUniqueInits:
+                        
+                            # 0 if found, 1 if not and 2 if error
+                            if not call(
+                                [
+                                    'grep',
+                                    '-i',
+                                    '-o',
+                                    # stop after first match
+                                    '-m', '1',
+                                    #'^_this addBackpack',
+                                    'addBackpack' if not wog3_no_auto_long_range_radio else backpack_radios,
+                                    path_to_mission_folder + '/' + lowercase_init
+                                ],
+                                stdout=devnull,
+                                stderr=devnull
+                            ):
+
+                                # If unit has backpack, then radio will be spawned behind him
+                                if not wog3_no_auto_long_range_radio:
+
+                                    unique_init_attrs['backpack_will_dup'] = True
+
+                                    check_results['errors']['has_unit_with_backpack_dup'] = True
+
+                            elif wog3_no_auto_long_range_radio:
+
+                                unique_init_attrs['group_leader_without_lrr'] = True
+
+                                check_results['warnings']['has_group_leader_without_lrr'] = True
+
+
+                        # Check if unit has personal radio
+                        # call will return 0 if found, 1 if not and 2 if error
                         if lowercase_init and bool(call(
                             [
                                 'grep',
@@ -819,7 +790,7 @@ def check(path_to_mission_folder):
                             stderr=devnull
                         )):
                             
-                            unique_init['has_no_radio'] = True
+                            unique_init_attrs['has_no_radio'] = True
 
                             check_results['warnings']['has_unit_without_personal_radio'] = True
 
@@ -847,13 +818,13 @@ def check(path_to_mission_folder):
 
                         if len(vanilla_equipment):
 
-                            unique_init['vanilla_equipment'] = vanilla_equipment
+                            unique_init_attrs['vanilla_equipment'] = vanilla_equipment
 
-            unique_sorted_inits.append(unique_init)
+            unique_inits_attrs.append(unique_init_attrs)
 
         devnull.close()
 
-        check_results['slots']['unique_inits'] = unique_sorted_inits
+        check_results['slots']['unique_inits'] = unique_inits_attrs
 
         check_results['sides'] = sides
 
