@@ -836,6 +836,12 @@ def check(path_to_mission_folder):
             vehicles
         )
 
+
+        if missionFilesListLowercaseMapping.get('description.ext'):
+
+            check_results['warnings']['has_description_ext'] = True
+            
+
         return check_results
 
 

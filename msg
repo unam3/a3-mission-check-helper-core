@@ -22,6 +22,7 @@ const msg = {
         has_unit_with_inventory: 'There is at least one unit with in-editor changed loadout.',
         has_group_leader_without_lrr: 'Has at least one squad leader without long range radio.',
         has_no_lrr: 'has no long range radio',
+        has_description_ext: 'mission has description.ext',
     },
     errors: {
         mission_was_not_binarized: 'mission.sqm must be binarized!',
