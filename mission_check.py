@@ -54,20 +54,38 @@ def getMissionFilesList(path, devnull):
 
 def get_wog3_no_auto_long_range_radio(path_to_init_sqf, devnull):
 
-        # 0 if found, 1 if not and 2 if error
-        return True if not call(
-            [
-                'grep',
-                #'-i',
-                '-o',
-                # stop after first match
-                #'-m', '1',
-                'wog3_no_auto_long_range_radio = true;',
-                path_to_init_sqf
-            ],
-            stdout=devnull,
-            stderr=devnull
-        ) else False
+    # 0 if found, 1 if not and 2 if error
+    return True if not call(
+        [
+            'grep',
+            #'-i',
+            '-o',
+            # stop after first match
+            #'-m', '1',
+            'wog3_no_auto_long_range_radio = true;',
+            path_to_init_sqf
+        ],
+        stdout=devnull,
+        stderr=devnull
+    ) else False
+
+
+def has_backpack_in_init(path_to_init, devnull, backpacks_to_find):
+
+    # 0 if found, 1 if not and 2 if error
+    return not call(
+        [
+            'grep',
+            '-i',
+            '-o',
+            # stop after first match
+            '-m', '1',
+            backpacks_to_find,
+            path_to_init
+        ],
+        stdout=devnull,
+        stderr=devnull
+    )
 
 
 # https://github.com/michail-nikolaev/task-force-arma-3-radio/blob/master/arma3/%40task_force_radio/addons/task_force_radio_items/config.cpp
@@ -76,6 +94,22 @@ personal_radios = 'itemradio\\|tf_anprc152\\|tf_anprc148jem\\|tf_fadak\\|tf_anpr
 
 # grep TFAR_Bag_Base
 backpack_radios = 'TFAR_Bag_Base\\|tf_rt1523g\\|tf_anprc155\\|tf_mr3000\\|tf_bussole\\|tf_anarc210\\|tf_anarc164\\|tf_mr6000l'
+
+def has_personal_radio_in_init(path_to_init, devnull):
+    return bool(call(
+        [
+            'grep',
+            '-i',
+            '-o',
+            # stop after first match
+            #'-m', '1',
+            personal_radios,
+            path_to_init
+        ],
+        stdout=devnull,
+        stderr=devnull
+    ))
+
 
 def check(path_to_mission_folder):
 
@@ -751,85 +785,62 @@ def check(path_to_mission_folder):
                             ).lower()
                         )
 
-
-                        # Check team leaders (first unit in squad) backpacks/LRR
-                        if init in groupLeadersUniqueInits:
+                        if bool(lowercase_init):
                         
-                            # 0 if found, 1 if not and 2 if error
-                            if not call(
-                                [
-                                    'grep',
-                                    '-i',
-                                    '-o',
-                                    # stop after first match
-                                    '-m', '1',
-                                    #'^_this addBackpack',
-                                    'addBackpack' if not wog3_no_auto_long_range_radio else backpack_radios,
-                                    path_to_mission_folder + '/' + lowercase_init
-                                ],
-                                stdout=devnull,
-                                stderr=devnull
-                            ):
+                            path_to_init = path_to_mission_folder + '/' + lowercase_init
 
-                                # If unit has backpack, then radio will be spawned behind him
-                                if not wog3_no_auto_long_range_radio:
+                            if init in groupLeadersUniqueInits:
 
-                                    unique_init_attrs['backpack_will_dup'] = True
+                                #'^_this addBackpack',
+                                backpacks_to_find = 'addBackpack' if not wog3_no_auto_long_range_radio else backpack_radios
 
-                                    check_results['errors']['has_unit_with_backpack_dup'] = True
+                                if has_backpack_in_init(path_to_init, devnull, backpacks_to_find):
 
-                            elif wog3_no_auto_long_range_radio:
+                                    # If unit has backpack, then radio will be spawned behind him
+                                    if not wog3_no_auto_long_range_radio:
 
-                                unique_init_attrs['group_leader_without_lrr'] = True
+                                        unique_init_attrs['backpack_will_dup'] = True
 
-                                check_results['warnings']['has_group_leader_without_lrr'] = True
+                                        check_results['errors']['has_unit_with_backpack_dup'] = True
+
+                                elif wog3_no_auto_long_range_radio:
+
+                                    unique_init_attrs['group_leader_without_lrr'] = True
+
+                                    check_results['warnings']['has_group_leader_without_lrr'] = True
 
 
-                        # Check if unit has personal radio
-                        # call will return 0 if found, 1 if not and 2 if error
-                        if lowercase_init and bool(call(
-                            [
-                                'grep',
-                                '-i',
-                                '-o',
-                                # stop after first match
-                                #'-m', '1',
-                                personal_radios,
-                                path_to_mission_folder + '/' + lowercase_init
-                            ],
-                            stdout=devnull,
-                            stderr=devnull
-                        )):
-                            
-                            unique_init_attrs['has_no_radio'] = True
+                            if has_personal_radio_in_init(path_to_init, devnull):
+                                
+                                unique_init_attrs['has_no_radio'] = True
 
-                            check_results['warnings']['has_unit_without_personal_radio'] = True
+                                check_results['warnings']['has_unit_without_personal_radio'] = True
 
 
-                        # catch error and add to check_results['errors']
-                        try:
+                            # catch error and add to check_results['errors']
+                            try:
 
-                            vanilla_equipment = checkVanillaEquip(init)
+                                vanilla_equipment = checkVanillaEquip(init)
 
-                        except CheckVanillaEquipError as shi:
+                            except CheckVanillaEquipError as shi:
 
-                            vanilla_equipment = ''
+                                vanilla_equipment = ''
 
-                            (error, path) = shi.value
+                                (error, path) = shi.value
 
-                            print error, path
+                                print error, path
 
-                            if (not check_results['errors'].get(error)):
+                                if (not check_results['errors'].get(error)):
 
-                                check_results['errors'][error] = []
+                                    check_results['errors'][error] = []
 
-                            #'return code: %s for %s' % (shi.returncode, init_path)
-                            check_results['errors'][error].append(path)
+                                #'return code: %s for %s' % (shi.returncode, init_path)
+                                check_results['errors'][error].append(path)
 
 
-                        if len(vanilla_equipment):
+                            if len(vanilla_equipment):
 
-                            unique_init_attrs['vanilla_equipment'] = vanilla_equipment
+                                unique_init_attrs['vanilla_equipment'] = vanilla_equipment
 
             unique_inits_attrs.append(unique_init_attrs)
 
