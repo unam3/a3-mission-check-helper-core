@@ -52,6 +52,24 @@ def getMissionFilesList(path, devnull):
     )
 
 
+def get_wog3_no_auto_long_range_radio(path_to_init_sqf, devnull):
+
+        # 0 if found, 1 if not and 2 if error
+        return True if not call(
+            [
+                'grep',
+                #'-i',
+                '-o',
+                # stop after first match
+                #'-m', '1',
+                'wog3_no_auto_long_range_radio = true;',
+                path_to_init_sqf
+            ],
+            stdout=devnull,
+            stderr=devnull
+        ) else False
+
+
 # https://github.com/michail-nikolaev/task-force-arma-3-radio/blob/master/arma3/%40task_force_radio/addons/task_force_radio_items/config.cpp
 # grep ItemRadio
 personal_radios = 'itemradio\\|tf_anprc152\\|tf_anprc148jem\\|tf_fadak\\|tf_anprc154\\|tf_rf7800str\\|tf_pnr1000a'
@@ -630,26 +648,19 @@ def check(path_to_mission_folder):
         check_results['mission_attrs']['wmt_side_channel_by_lr'] = wmt_side_channel_by_lr
 
 
+        wog3_no_auto_long_range_radio = False
+
         init_sqf = missionFilesListLowercaseMapping.get('init.sqf')
 
-        # 0 if found, 1 if not and 2 if error
-        wog3_no_auto_long_range_radio = True if init_sqf and not call(
-            [
-                'grep',
-                #'-i',
-                '-o',
-                # stop after first match
-                #'-m', '1',
-                'wog3_no_auto_long_range_radio = true;',
-                path_to_mission_folder + '/' + init_sqf
-            ],
-            stdout=devnull,
-            stderr=devnull
-        ) else False
+        if init_sqf:
 
-        if (wog3_no_auto_long_range_radio):
-            
-            check_results['mission_attrs']['wog3_no_auto_long_range_radio'] = True
+            path_to_init_sqf = path_to_mission_folder + '/' + init_sqf
+
+            wog3_no_auto_long_range_radio = get_wog3_no_auto_long_range_radio(path_to_init_sqf, devnull)
+
+            if (wog3_no_auto_long_range_radio):
+                
+                check_results['mission_attrs']['wog3_no_auto_long_range_radio'] = True
 
 
         # get slots count, uniq inits
@@ -841,6 +852,10 @@ def check(path_to_mission_folder):
 
             check_results['warnings']['has_description_ext'] = True
             
+
+        # TODO: check size of the images
+        # filesize in KB
+        #ls -kl loadscreen.jpg |cut -d ' ' -f 5
 
         return check_results
 
