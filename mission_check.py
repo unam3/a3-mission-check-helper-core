@@ -138,31 +138,9 @@ def check(path_to_mission_folder):
     #print missionFilesListLowercaseMapping
 
 
-    def checkVanillaEquip(init):
+    def checkVanillaEquip(init_path):
 
-        splitted_init = init.split('""')[1]
-
-        #print splitted_init
-
-        if not re.match('^[-\w.\\\]+$', splitted_init, re.UNICODE):
-
-            raise CheckVanillaEquipError(('unallowed_path_to_equipment_script', splitted_init))
-
-
-        proper_slashes_splitted_init = '/'.join(
-            splitted_init.split('\\')
-        )
-
-        init_in_fs = missionFilesListLowercaseMapping.get(proper_slashes_splitted_init.lower())
-
-        #print proper_slashes_splitted_init, init_in_fs
-
-        init_path = path_to_mission_folder + '/' + init_in_fs
-
-        #print path_to_mission_folder
-        #print relative_path
         #print init_path
-        #print ''
 
         out = None
 
@@ -817,10 +795,9 @@ def check(path_to_mission_folder):
                                 check_results['warnings']['has_unit_without_personal_radio'] = True
 
 
-                            # catch error and add to check_results['errors']
                             try:
 
-                                vanilla_equipment = checkVanillaEquip(init)
+                                vanilla_equipment = checkVanillaEquip(path_to_init)
 
                             except CheckVanillaEquipError as shi:
 
