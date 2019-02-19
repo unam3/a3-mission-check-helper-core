@@ -739,14 +739,6 @@ def check(path_to_mission_folder):
 
                 if not re.search('this call compile preprocessfilelinenumber', init, re.UNICODE|re.IGNORECASE):
 
-                    error = 'unsupported_equipment_init'
-
-                    if (not check_results['errors'].get(error)):
-
-                        check_results['errors'][error] = []
-
-                    check_results['errors'][error].append(init)
-
                     unique_init_attrs['unsupported_equipment_init'] = True
 
                 else:

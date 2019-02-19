@@ -1,9 +1,14 @@
 const msg = {
+    headings: {
+        vehicles_static_boxes: 'Vehicles, static weapon and boxes',
+        units: 'Units',
+        uniq_unit_inits: 'Unique unit inits',
+    },
     mission_attrs: {
-        author: 'Author:',
-        loadScreen: 'Load screen image:',
-        briefing_name: 'Mission name:',
-        overview_text: 'Overview text:',
+        author: 'Author',
+        loadScreen: 'Load screen image',
+        briefing_name: 'Mission name',
+        overview_text: 'Overview text',
         //wog3_no_auto_long_range_radio: 'Has set no auto long range radio provision',
         wog3_no_auto_long_range_radio: 'Auto long range radio provision',
         //wmt_auto_med_provision: 'WMT: Auto medicine provision is enabled',
@@ -15,28 +20,48 @@ const msg = {
     },
     slots: {
         squad_default_name: 'Aplha 1-',
+        total_playable_slots_count: 'Total playable slots count',
+        //side_playable_slots_count: `\n${side} has ${report.slots.playable_slots[side]} playable slots\n`,
+        ace_isMedic: {
+            '0.0': 'Regular unit medical abillities',
+            '1.0': 'Regular medic',
+            '2.0': 'Doctor',
+            unusual_value: 'Unusual "ace_isMedic" attribute value: ',
+        },
+        ace_isEngineer: {
+            '0.0': 'Unit has no engineer abillities',
+            '1.0': 'Engineer',
+            '2.0': 'Advanced engineer',
+            unusual_value: 'Unusual "ace_isEngineer" attribute value: ',
+        },
+    },
+    vehicles: {
+        ace_isMedicalVehicle: 'is medical vehicle',  
+        ace_isRepairVehicle: 'is repair vehicle',  
     },
     warnings: {
-        has_no_radio: 'has no radio', 
+        has_no_personal_radio: 'has no personal radio', 
         has_unit_without_personal_radio: 'There is at least one unit without personal radio.',
-        has_unit_with_inventory: 'There is at least one unit with in-editor changed loadout.',
         has_group_leader_without_lrr: 'Has at least one squad leader without long range radio.',
         has_no_lrr: 'has no long range radio',
         has_description_ext: 'mission has description.ext',
+        unsupported_equipment_init: ' — this init is unsupported!',
     },
     errors: {
         mission_was_not_binarized: 'mission.sqm must be binarized!',
         wrong_filename: 'Incorrect filename!',
         extraction_error: 'Extraction error!',
 
+        too_many_slots: 'The number of slots on missions should not exceed 190.',
+
         not_playable_unit: 'this unit is not playable!',
-        unsupported_equipment_init: 'Unsupported equipment inits',
         unallowed_path_to_equipment_script: 'Unallowed path to equipment script. Only alphabetical, numerical characters, "\", "-", "." are ok.',
         no_such_init_file: 'There is no such file!',
 
         vanilla_equipment: 'Unit init has forbidden vanilla equipment',
         has_unit_with_backpack_dup: 'Has at least one squad with the squad leader (first unit) with duplicated backpack!',
         backpack_will_dup: 'backpack from the equipment will spawn behind squad leader\'s back with this init; LRR will be on unit',
+        unit_has_inventory_without_init: 'Unit with in-editor changed loadout has no equipment init!',
 
         //wrong_briefing_name: 'Название миссии не удовлетворяет шаблону.',
         wrong_briefing_name: 'Mission name is incorrect.',
