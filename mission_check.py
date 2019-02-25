@@ -92,8 +92,15 @@ def has_backpack_in_init(path_to_init, devnull, backpacks_to_find):
 # grep ItemRadio
 personal_radios = 'itemradio\\|tf_anprc152\\|tf_anprc148jem\\|tf_fadak\\|tf_anprc154\\|tf_rf7800str\\|tf_pnr1000a'
 
-# grep TFAR_Bag_Base
-backpack_radios = 'TFAR_Bag_Base\\|tf_rt1523g\\|tf_anprc155\\|tf_mr3000\\|tf_bussole\\|tf_anarc210\\|tf_anarc164\\|tf_mr6000l'
+#copytoclipboard str ("((configName _x) isKindOf 'Backpacks') && (getNumber (_x >> 'tf_hasLRradio') != 0) && (getNumber (_x >> 'scope') >= 2)" configClasses (configFile >> "CfgVehicles") apply {
+#    [
+#        configName _x
+#    ]
+#});
+
+# TFAR_Bag_Base for the reason that some give itemRadio and some may give it? Check this out
+#'TFAR_Bag_Base\\\\|' + .map(([className]) => className).join('\\\\|')
+backpack_radios = 'TFAR_Bag_Base\\|usm_pack_alice_prc119\\|usm_pack_alice_prc77\\|usm_pack_st138_prc77\\|tf_rt1523g\\|tf_rt1523g_bwmod\\|tf_rt1523g_rhs\\|tf_rt1523g_big\\|tf_rt1523g_big_bwmod\\|tf_rt1523g_big_bwmod_tropen\\|tf_rt1523g_big_rhs\\|tf_rt1523g_sage\\|tf_rt1523g_green\\|tf_rt1523g_fabric\\|tf_rt1523g_black\\|tf_anprc155\\|tf_anprc155_coyote\\|tf_mr3000\\|tf_mr3000_multicam\\|tf_mr3000_bwmod\\|tf_mr3000_bwmod_tropen\\|tf_mr3000_rhs\\|tf_bussole\\|tf_anarc210\\|tf_anarc164\\|tf_mr6000l\\|UK3CB_BAF_B_Bergen_MTP_Radio_H_A\\|UK3CB_BAF_B_Bergen_MTP_Radio_H_B\\|UK3CB_BAF_B_Bergen_MTP_Radio_L_A\\|UK3CB_BAF_B_Bergen_MTP_Radio_L_B\\|UK3CB_BAF_B_Bergen_MTP_JTAC_H_A\\|UK3CB_BAF_B_Bergen_MTP_JTAC_L_A\\|UK3CB_BAF_B_Bergen_MTP_SL_H_A\\|UK3CB_BAF_B_Bergen_MTP_SL_L_A\\|UK3CB_BAF_B_Bergen_DDPM_SL_A\\|UK3CB_BAF_B_Bergen_DDPM_JTAC_A\\|UK3CB_BAF_B_Bergen_DDPM_JTAC_H_A\\|UK3CB_BAF_B_Bergen_DPMW_SL_A\\|UK3CB_BAF_B_Bergen_DPMW_JTAC_A\\|UK3CB_BAF_B_Bergen_DPMW_JTAC_H_A\\|UK3CB_BAF_B_Bergen_DPMT_SL_A\\|UK3CB_BAF_B_Bergen_DPMT_JTAC_A\\|UK3CB_BAF_B_Bergen_DPMT_JTAC_H_A\\|UK3CB_BAF_B_Bergen_Arctic_SL_A\\|UK3CB_BAF_B_Bergen_Arctic_JTAC_A\\|UK3CB_BAF_B_Bergen_Arctic_JTAC_H_A\\|UK3CB_BAF_B_Bergen_OLI_SL_A\\|UK3CB_BAF_B_Bergen_OLI_JTAC_A\\|UK3CB_BAF_B_Bergen_OLI_JTAC_H_A\\|UK3CB_BAF_B_Bergen_TAN_SL_A\\|UK3CB_BAF_B_Bergen_TAN_JTAC_A\\|UK3CB_BAF_B_Bergen_TAN_JTAC_H_A'
 
 def has_personal_radio_in_init(path_to_init, devnull):
     return bool(call(
