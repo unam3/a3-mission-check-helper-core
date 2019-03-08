@@ -148,6 +148,34 @@ def has_personal_radio_in_init(path_to_init, devnull):
 #    return init_options if len(init_options) else None
 
 
+def checkVanillaEquip(init_path, current_script_dir, devnull):
+
+    #print init_path
+
+    out = None
+
+    try:
+        out = check_output(
+            [
+                'grep',
+                '-i',
+                '-f', current_script_dir + '/V_Weapon.sqf',
+                init_path
+            ],
+            stderr=devnull
+        )
+
+    except CalledProcessError as shi:
+
+        # shi.returncode == 1 — grep was not found any matching substring in file
+        # if 2 — no such file as init_path
+        if (shi.returncode != 1):
+
+            raise CheckVanillaEquipError(('no_such_init_file', init))
+
+    return '' if (not out) else out.decode('utf-8')
+
+
 def check(path_to_mission_folder):
 
     #print 'check', path_to_mission_folder
@@ -173,34 +201,6 @@ def check(path_to_mission_folder):
         missionFilesListLowercaseMapping[path_to_file.lower()] = path_to_file
 
     #print missionFilesListLowercaseMapping
-
-
-    def checkVanillaEquip(init_path):
-
-        #print init_path
-
-        out = None
-
-        try:
-            out = check_output(
-                [
-                    'grep',
-                    '-i',
-                    '-f', current_script_dir + '/V_Weapon.sqf',
-                    init_path
-                ],
-                stderr=devnull
-            )
-
-        except CalledProcessError as shi:
-
-            # shi.returncode == 1 — grep was not found any matching substring in file
-            # if 2 — no such file as init_path
-            if (shi.returncode != 1):
-
-                raise CheckVanillaEquipError(('no_such_init_file', init))
-
-        return '' if (not out) else out.decode('utf-8')
 
 
     wmt_disable_fuel_stations = True
@@ -796,7 +796,7 @@ def check(path_to_mission_folder):
 
                             try:
 
-                                vanilla_equipment = checkVanillaEquip(path_to_init)
+                                vanilla_equipment = checkVanillaEquip(path_to_init, current_script_dir, devnull)
 
                             except CheckVanillaEquipError as shi:
 
