@@ -36,8 +36,10 @@ const msg = {
         },
     },
     vehicles: {
-        ace_isMedicalVehicle: 'is medical vehicle',  
-        ace_isRepairVehicle: 'is repair vehicle',  
+        ace_isMedicalVehicle: 'is medical vehicle',
+        ace_isRepairVehicle: 'is repair vehicle',
+        ammo: 'ammo',
+        fuel: 'fuel',
     },
     warnings: {
         has_no_personal_radio: 'has no personal radio', 
