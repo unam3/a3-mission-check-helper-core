@@ -21,7 +21,7 @@ const msg = {
     slots: {
         squad_default_name: 'Aplha 1-',
         total_playable_slots_count: 'Total playable slots count',
-        //side_playable_slots_count: `\n${side} has ${report.slots.playable_slots[side]} playable slots\n`,
+        side_playable_slots_count: `\n{side} side has {playable_slots} playable slots\n`,
         ace_isMedic: {
             '0.0': 'Regular unit medical abillities',
             '1.0': 'Regular medic',
