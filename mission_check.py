@@ -221,6 +221,8 @@ def check(path_to_mission_folder):
 
         class_path = []
 
+        layers = 0
+
         # units
         in_group_class = False
 
@@ -267,53 +269,100 @@ def check(path_to_mission_folder):
 
             elif (re.match('\s*};', line)):
 
-                if (in_group_class and group_side and len(class_path) == 3):
+                if (
+                    in_group_class and
+                    group_side and
+                    (   
+                        class_path[-3] == 'Mission' or
+                        (
+                            class_path[-3].startswith('Item') and
+                            class_path[-3].endswith('~L')
+                        )
+                    ) and
+                    class_path[-2] == 'Entities' and
+                    class_path[-1].startswith('Item')
+                ):
+
+                    #print class_path, number, class_path[0] == 'Mission', class_path[-2] == 'Entities', class_path[-1].startswith('Item')
 
                     in_group_class = False
 
                     group_side = False
 
-                elif (in_unit_class and len(class_path) < 6):
+                # [u'Mission', u'Entities', u'Item72', u'Entities', u'Item2']
+                elif (
+                    in_unit_class and
+                    # we check only two last classnames 'cause unit class can't have inner "Entities" class
+                    class_path[-2] == 'Entities' and
+                    class_path[-1].startswith('Item')
+                ):
 
                     in_unit_class = False
 
-                elif (in_group_custom_attr_group_id and len(class_path) < 6):
+                # [u'Mission', u'Entities', u'Item2', u'CustomAttributes', u'Attribute0']
+                elif (
+                    in_group_custom_attr_group_id and
+                    class_path[-1].startswith('Attribute')
+                ):
 
                     in_group_custom_attr_group_id = False
 
-                elif (in_unit_custom_attrs_medic and len(class_path) == 7):
+                # [u'Mission', u'Entities', u'Item125', u'Entities', u'Item5', u'CustomAttributes', u'Attribute0']
+                elif (
+                    in_unit_custom_attrs_medic and
+                    class_path[-1].startswith('Attribute')
+                ):
 
                     in_unit_custom_attrs_medic = False
 
-                elif (in_unit_custom_attrs_engineer and len(class_path) == 7):
+                elif (
+                    in_unit_custom_attrs_engineer and
+                    class_path[-1].startswith('Attribute')
+                ):
 
                     in_unit_custom_attrs_engineer = False
 
                 elif (in_object_class):
 
-                    if len(class_path) == 3:
+                    if (
+                        (
+                            class_path[-3] == 'Mission' or
+                            (
+                                class_path[-3].startswith('Item') and
+                                class_path[-3].endswith('~L')
+                            )
+                        ) and 
+                        class_path[-2] == 'Entities' and
+                        class_path[-1].startswith('Item')
+                    ):
+
+                        #print number, class_path
+
+                        #if class_path[-2].startswith('Item') and class_path[-2].endswith('~L'):
+
+                        #    print number, class_path
 
                         in_object_class = False
 
                         object_class_attrs = {}
 
-                    elif (object_class_custom_attr and len(class_path) == 5):
-
-                        #print 'term', len(class_path), class_path
-
-                        #print line
+                    # [u'Mission', u'Entities', u'Item112', u'CustomAttributes', u'Attribute5', u'Value', u'data']
+                    elif (
+                        object_class_custom_attr and
+                        class_path[-2] == 'Value' and
+                        class_path[-1] == 'data'
+                    ):
 
                         object_class_custom_attr = False
 
                 elif (in_logic_class):
 
+                    # [u'Mission', u'Entities', u'Item2']
                     if (len(class_path) == 3):
 
                         in_logic_class = False
 
-                    # why two line prints instead of oonly one with this condition?
-                    #elif (in_logic_class_custom_attr_disable_fuel_st):
-                    elif (len(class_path) == 5):
+                    elif class_path[-1].startswith('Attribute'):
 
                         if (in_logic_class_custom_attr_disable_fuel_st):
 
@@ -334,7 +383,17 @@ def check(path_to_mission_folder):
 
                 if len(class_path) > 0:
                     
+                    if (
+                        layers and
+                        len(class_path) > 0 and
+                        class_path[-1].endswith('~L')
+                    ):
+                        
+                        layers -= 1
+
+
                     class_path.pop()
+                    
 
             elif (len(class_path)):
 
@@ -423,7 +482,16 @@ def check(path_to_mission_folder):
 
                             # Mission - Entities - ItemN /w dataType = "Group"
                             # parse "side" property too
-                            if (len(class_path) == 3):
+                            if (
+                                len(class_path) == 3 or
+                                (
+                                    len(class_path) >= 3 and
+                                    class_path[-3].startswith('Item') and
+                                    class_path[-3].endswith('~L') and
+                                    class_path[-2] == 'Entities' and
+                                    class_path[-1].startswith('Item')
+                                )
+                            ):
 
                                 if (attr_name == 'dataType' and stripped_attr_value == 'Group'):
 
@@ -453,10 +521,6 @@ def check(path_to_mission_folder):
 
                                 elif (in_object_class):
 
-                                    #print class_path
-
-                                    #print line
-
                                     if attr_name == 'type':
                                         
                                         vehicle_name = (
@@ -484,24 +548,38 @@ def check(path_to_mission_folder):
                                                 object_class_attrs['name'] = box_name
 
                                                 boxes.append(object_class_attrs)
-                                        
 
-                                #elif (attr_name == 'id' or attr_name == 'type'):
-                                #    
-                                #    print attr_name, stripped_semi_attr_value
+                                elif (attr_name == 'dataType' and stripped_attr_value == 'Layer'):
+
+                                    layers += 1
+
+                                    class_path[-1] += '~L'
+
+                                    # we can parse layer's name
+
 
                             elif (not in_unit_class and in_group_class and group_side):
 
-                                #print class_path
+                                # [u'Mission', u'Entities', u'Item147', u'Entities', u'Item0']
+                                # [u'Mission', u'Entities', u'Item2~L', u'Entities', u'Item0']
+                                if (
+                                    len(class_path) >= 5 and
+                                    (
+                                        class_path[-5] == 'Mission' or
+                                        (
+                                            class_path[-5].startswith('Item') and
+                                            class_path[-5].endswith('~L') and
+                                            class_path[-4] == 'Entities' and
+                                            class_path[-3].startswith('Item')
+                                        )
+                                    ) and
+                                    class_path[-2] == 'Entities' and
+                                    class_path[-1].startswith('Item') and
+                                    attr_name == 'dataType' and
+                                    stripped_attr_value == 'Object'
+                                ):
 
-                                #print line
-
-                                # Mission → Entities → ItemN /w dataType == 'Group' → Entities → ItemN
-                                if (len(class_path) == 5 and attr_name == 'dataType' and stripped_attr_value == 'Object'):
-
-                                    # add empty unit dict to the last group units list
-                                    #print sides[group_side][-1]
-
+                                    # adds empty units dict to the last group units list
                                     sides[group_side][-1]['units'].append({})
 
                                     #print sides[group_side][-1], '---'
@@ -509,22 +587,26 @@ def check(path_to_mission_folder):
                                     in_unit_class = True
 
                                 # Mission → Entities → ItemN /w dataType == 'Group' → CustomAttributes
-                                #    → AttributeN /w property == "groupID" - Value - data - 'value' property
-                                elif (len(class_path) == 5 and class_path[3] == 'CustomAttributes'
-                                    and attr_name == 'property' and stripped_attr_value == 'groupID'):
-
-                                    #print 2323, in_unit_class, line
+                                #    → AttributeN /w property == "groupID"
+                                elif (
+                                    class_path[-2] == 'CustomAttributes' and
+                                    class_path[-1].startswith('Attribute') and
+                                    attr_name == 'property' and
+                                    stripped_attr_value == 'groupID'
+                                ):
 
                                     in_group_custom_attr_group_id = True
 
-                                # Mission - Entities - ItemN /w dataType = "Group" - CustomAttributes -
-                                #   AttributeN /w property == "groupID" - Value - data - 'value' property
-                                elif (in_group_custom_attr_group_id and len(class_path) == 7 and attr_name == 'value'):
-
-                                    #print 'l\n', line, '\nl'
+                                # [u'Mission', u'Entities', u'Item3', u'CustomAttributes', u'Attribute0', u'Value', u'data']
+                                elif (
+                                    in_group_custom_attr_group_id and
+                                    class_path[-2] == 'Value' and
+                                    class_path[-1] == 'data' and
+                                    attr_name == 'value'
+                                ):
 
                                     sides[group_side][-1]['groupID'] = stripped_attr_value
-                            
+
                             elif (in_unit_class):
 
                                 # parse "side" property too. just in case
@@ -547,8 +629,12 @@ def check(path_to_mission_folder):
                                     sides[group_side][-1]['units'][-1]['isPlayable'] = True
 
                                 # Mission - Entities - ItemN /w dataType = "Group" - Entities - ItemN - CustomAttributes
-                                elif (len(class_path) == 7 and class_path[5] == 'CustomAttributes'
-                                    and attr_name == 'property'):
+                                #   - Attribute
+                                elif (
+                                    class_path[-2] == 'CustomAttributes' and
+                                    class_path[-1].startswith('Attribute') and
+                                    attr_name == 'property'
+                                ):
 
                                     if (stripped_attr_value == 'ace_isMedic'):
 
@@ -558,40 +644,55 @@ def check(path_to_mission_folder):
 
                                         in_unit_custom_attrs_engineer = True
 
-                                elif (in_unit_custom_attrs_medic and len(class_path) == 9 and class_path[7] == 'Value'
-                                    and class_path[8] == 'data'):
+                                # [u'Mission', u'Entities', u'Item165', u'Entities', u'Item7', u'CustomAttributes', u'Attribute0', u'Value', u'data']
+                                elif (
+                                    in_unit_custom_attrs_medic and
+                                    class_path[-2] == 'Value' and
+                                    class_path[-1] == 'data'
+                                ):
 
-                                    #print class_path, len(class_path)
-
-                                    #print 'ace_isMedic', stripped_semi_attr_value
-                                    
                                     sides[group_side][-1]['units'][-1]['ace_isMedic'] = stripped_semi_attr_value
 
-                                elif (in_unit_custom_attrs_engineer and len(class_path) == 9
-                                    and class_path[7] == 'Value' and class_path[8] == 'data'):
+                                elif (
+                                    in_unit_custom_attrs_engineer and
+                                    class_path[-2] == 'Value' and
+                                    class_path[-1] == 'data'
+                                ):
 
                                     #print 'ace_isEngineer', stripped_semi_attr_value
 
                                     sides[group_side][-1]['units'][-1]['ace_isEngineer'] = stripped_semi_attr_value
 
-                                elif (len(class_path) == 7 and class_path[5] == 'Attributes'
-                                    and class_path[6] == 'Inventory'):
+                                # [u'Mission', u'Entities', u'Item155', u'Entities', u'Item5', u'Attributes', u'Inventory']
+                                elif (
+                                    class_path[-2] == 'Attributes' and
+                                    class_path[-1] == 'Inventory'
+                                ):
                                     
                                     sides[group_side][-1]['units'][-1]['has_inventory'] = True
 
                                     check_results['warnings']['has_unit_with_inventory'] = True
 
-                                #print class_path
-                                #print line
 
                             elif (in_object_class):
 
-                                #print class_path
+                                #print number, class_path
 
-                                #print line
-
-                                if (len(class_path) == 4 and class_path[3] == 'Attributes'):
+                                if (
+                                    (
+                                        class_path[-4] == 'Mission' or
+                                        (
+                                            class_path[-4].startswith('Item') and
+                                            class_path[-4].endswith('~L')
+                                        )
+                                    ) and 
+                                    class_path[-3] == 'Entities' and
+                                    class_path[-2].startswith('Item') and
+                                    class_path[-1] == 'Attributes'
+                                ):
                                     
+                                    #print number, class_path
+
                                     if (attr_name == 'lock' or attr_name == 'init' or attr_name == 'description'):
 
                                         object_class_attrs[attr_name] = stripped_attr_value
@@ -600,43 +701,48 @@ def check(path_to_mission_folder):
 
                                         object_class_attrs[attr_name] = int(float(stripped_semi_attr_value) * 100)
 
-                                #[u'Mission', u'Entities', u'Item3', u'CustomAttributes', u'Attribute0']
-                                #property = "ace_isMedicalVehicle";
+                                # ['Mission', 'Entities', 'Item3', 'CustomAttributes', 'Attribute0']
+                                # property = "ace_isMedicalVehicle";
+                                elif (
+                                    len(class_path) >= 5 and
+                                    (class_path[-5] == 'Mission' or
+                                        (
+                                            class_path[-5].startswith('Item') and
+                                            class_path[-5].endswith('~L')
+                                        )
+                                    ) and
+                                    class_path[-4] == 'Entities' and
+                                    class_path[-3].startswith('Item') and
+                                    class_path[-2] == 'CustomAttributes' and
+                                    class_path[-1].startswith('Attribute') and
+                                    attr_name == 'property' and
+                                    (stripped_attr_value == 'ace_isMedicalVehicle' or
+                                    stripped_attr_value == 'ace_isRepairVehicle')
+                                ):
 
+                                    #print stripped_attr_value, number
 
-                                elif (len(class_path) == 5 and class_path[3] == 'CustomAttributes'):
-                                    
+                                    object_class_custom_attr = stripped_attr_value
 
-                                    if (attr_name == 'property' and
-                                        (stripped_attr_value == 'ace_isMedicalVehicle' or
-                                        stripped_attr_value == 'ace_isRepairVehicle')
-                                    ):
+                                # ['Mission', 'Entities', 'Item3', 'CustomAttributes', 'Attribute1', 'Value', 'data']
+                                # value = 1.0;
+                                elif (
+                                    object_class_custom_attr and
+                                    class_path[-2] == 'Value' and
+                                    class_path[-1] == 'data'
+                                ):
 
-                                        #print stripped_attr_value
+                                    #print number, object_class_custom_attr, class_path
 
-                                        object_class_custom_attr = stripped_attr_value
-
-                                #[u'Mission', u'Entities', u'Item3', u'CustomAttributes', u'Attribute1', u'Value', u'data']
-                                #value = 1.0;
-
-                                elif (object_class_custom_attr and len(class_path) == 7 and
-                                    class_path[5] == 'Value' and class_path[6] == 'data'):
-
-                                        #print 'object_class_custom_attr', class_path
-
-                                        #print line
-
-                                        vehicles[-1][object_class_custom_attr] = stripped_semi_attr_value
+                                    vehicles[-1][object_class_custom_attr] = stripped_semi_attr_value
 
                             elif (in_logic_class):
 
-                                #print class_path
-
-                                #print line
-
-                                # CustomAttributes - AttributeN
-                                if (len(class_path) == 5 and class_path[3] == 'CustomAttributes' and
-                                    attr_name == 'property'):
+                                # [u'Mission', u'Entities', u'Item2', u'CustomAttributes', u'Attribute0']
+                                if (
+                                    class_path[-1].startswith('Attribute') and
+                                    attr_name == 'property'
+                                ):
                                     
                                     if (stripped_attr_value == 'WMT_Main_DisableFuelSt'):
                                     
@@ -723,30 +829,24 @@ def check(path_to_mission_folder):
         check_results['slots']['playable_slots'] = playable_slots
 
 
-        #clientside this!
-        #if (total_playable_slots > 190):
-        #    
-        #    check_results['slots']['too_much_slots'] = True
-
-
         sorted_uniq_inits = sorted(uniqueUnitInits)
 
         #print sorted_uniq_inits
 
         unique_inits_attrs = []
-        
+
         for init in sorted_uniq_inits:
-            
+
             unique_init_attrs = {'init': init}
 
             # None if no init
             if (init):
 
                 #print 'init:', init
-                
+
                 # proper init example:
                 # call{this call compile preprocessfilelinenumbers ""equipment_infanterie\Russian_army\msv\spn_sniper.sqf"";}
-                
+
                 # unsupported (Crabe-) init example:
                 # call{[this, ""BAND"", ""LEAD""] call compile preprocessFileLineNumbers ""process_units.sqf"";}
 
