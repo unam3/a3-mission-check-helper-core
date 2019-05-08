@@ -3,10 +3,8 @@
 
 from __future__ import unicode_literals
 
-import re, sys, os, exceptions
+import exceptions
 from subprocess import check_output, CalledProcessError, STDOUT
-
-# $1 is first argument to this script as in example above
 
 class ExtractpboError(exceptions.Exception):
 
@@ -18,33 +16,29 @@ class ExtractpboError(exceptions.Exception):
 
         return repr(self.value)
 
-def extract_pbo(path_to_uploaded_file, additional_path=''):
+def extract_pbo(path_to_uploaded_file):
 
     #print path_to_uploaded_file
 
-    #print os.getcwd()
-
     extractpbo_output = ''
 
-    with open(os.devnull, 'w') as f:
+    try:
 
-        # error.returncode == 1:
-        # - empty file
-        # - not pbo at all
-        try:
+        extractpbo_output = check_output(
+            [
+                'extractpbo',
+                path_to_uploaded_file
+            ],
+            stderr=STDOUT
+        )
 
-            extractpbo_output = check_output(
-                [
-                    'extractpbo',
-                    path_to_uploaded_file
-                ],
-                stderr=STDOUT
-            )
+    # error.returncode == 1:
+    # - empty file
+    # - not pbo at all
+    except CalledProcessError as error:
 
-        except CalledProcessError as error:
-
-            #raise ExtractpboError('Wrong or corrupted file: %s for %s' % (error.returncode, path_to_uploaded_file))
-            raise ExtractpboError('Wrong or corrupted file.')
+        #raise ExtractpboError('Wrong or corrupted file: %s for %s' % (error.returncode, path_to_uploaded_file))
+        raise ExtractpboError('Wrong or corrupted file.')
 
 
     extractpbo_output_strings = extractpbo_output.split('\n')
