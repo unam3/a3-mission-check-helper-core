@@ -47,23 +47,23 @@ const msg = {
         has_group_leader_without_lrr: 'Has at least one squad leader without long range radio.',
         has_no_lrr: 'has no long range radio',
         has_description_ext: 'mission has description.ext',
-        unsupported_equipment_init: ' — this init is unsupported!',
+        unsupported_equipment_init: ' — this init is unsupported.',
     },
     errors: {
-        mission_was_not_binarized: 'mission.sqm must be binarized!',
-        wrong_filename: 'Incorrect filename!',
-        extraction_error: 'Extraction error!',
+        mission_was_not_binarized: 'mission.sqm must be binarized.',
+        wrong_filename: 'Incorrect filename. Compare with example: wog_160_wog_best_mission_10.Takistan.pbo',
+        extraction_error: 'Pbo extraction error.',
 
         too_many_slots: 'The number of slots on missions should not exceed 190.',
 
-        not_playable_unit: 'this unit is not playable!',
+        not_playable_unit: 'this unit is not playable.',
         unallowed_path_to_equipment_script: 'Unallowed path to equipment script. Only alphabetical, numerical characters, "\", "-", "." are ok.',
-        no_such_init_file: 'There is no such file!',
+        no_such_init_file: 'There is no such file.',
 
         vanilla_equipment: 'Unit init has forbidden vanilla equipment',
-        has_unit_with_backpack_dup: 'Has at least one squad with the squad leader (first unit) with duplicated backpack!',
+        has_unit_with_backpack_dup: 'Has at least one squad with the squad leader (first unit) with duplicated backpack.',
         backpack_will_dup: 'backpack from the equipment will spawn behind squad leader\'s back with this init; LRR will be on unit',
-        unit_has_inventory_without_init: 'Unit with in-editor changed loadout has no equipment init!',
+        unit_has_inventory_without_init: 'Unit with in-editor changed loadout has no equipment init.',
 
         //wrong_briefing_name: 'Название миссии не удовлетворяет шаблону.',
         wrong_briefing_name: 'Mission name is incorrect.',
