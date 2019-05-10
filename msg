@@ -72,7 +72,7 @@ const msg = {
         respawn: 'Respawn must be set to "Spectator".',
         respawn_rulesets: 'Only "Spectator" option must be set in the "Rulesets" of the "Multiplayer" attributes.',
         enable_target_debugging: 'Please turn on "Enable Target Debugging".',
-        wind: 'Wind must be less than or equal to 40%:',
-        rain: 'Rain must be less than or equal to 40%:',
+        wrong_wind: 'Wind must be less than or equal to 40%',
+        wrong_rain: 'Rain must be less than or equal to 40%',
     },
 };

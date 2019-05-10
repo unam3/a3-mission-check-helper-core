@@ -469,12 +469,12 @@ def check(path_to_mission_folder):
                             elif ((attr_name == 'startWind' or attr_name == 'forecastWind')
                                 and float(stripped_semi_attr_value) >= 0.41):
 
-                                check_results['mission_attrs']['w_wind'] = int(float(stripped_semi_attr_value) * 100)
+                                check_results['mission_attrs']['wrong_wind'] = int(float(stripped_semi_attr_value) * 100)
 
                             elif ((attr_name == 'startRain' or attr_name == 'forecastRain')
                                 and float(stripped_semi_attr_value) >= 0.41):
 
-                               check_results['mission_attrs']['w_rain'] = int(float(stripped_semi_attr_value) * 100)
+                               check_results['mission_attrs']['wrong_rain'] = int(float(stripped_semi_attr_value) * 100)
 
                         elif (len(class_path) >= 2 and class_path[1] == str('Entities')):
 
