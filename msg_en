@@ -1,4 +1,4 @@
-const msg = {
+en: {
     headings: {
         vehicles_static_boxes: 'Vehicles, static weapon and boxes',
         units: 'Units',
@@ -26,7 +26,6 @@ const msg = {
             '0.0': 'Regular unit medical abillities',
             '1.0': 'Regular medic',
             '2.0': 'Doctor',
-            unusual_value: 'Unusual "ace_isMedic" attribute value: ',
         },
         ace_isEngineer: {
             '0.0': 'Unit has no engineer abillities',
@@ -65,9 +64,7 @@ const msg = {
         backpack_will_dup: 'backpack from the equipment will spawn behind squad leader\'s back with this init; LRR will be on unit',
         unit_has_inventory_without_init: 'Unit with in-editor changed loadout has no equipment init.',
 
-        //wrong_briefing_name: 'Название миссии не удовлетворяет шаблону.',
         wrong_briefing_name: 'Mission name is incorrect.',
-        //saving: 'Сохранение должно быть выключено.',
         saving: 'Saving must be disabled.',
         respawn: 'Respawn must be set to "Spectator".',
         respawn_rulesets: 'Only "Spectator" option must be set in the "Rulesets" of the "Multiplayer" attributes.',
@@ -75,4 +72,4 @@ const msg = {
         wrong_wind: 'Wind must be less than or equal to 40%',
         wrong_rain: 'Rain must be less than or equal to 40%',
     },
-};
+},
