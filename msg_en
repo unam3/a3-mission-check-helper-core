@@ -19,7 +19,14 @@ en: {
         wmt_disable_fuel_stations: 'WMT: Fuel stations can refuel',
     },
     slots: {
-        squad_default_name: 'Aplha 1-',
+        squad_default_names: {
+            1: 'Alpha',
+            2: 'Bravo',
+            3: 'Charlie',
+            4: 'Delta',
+            5: 'Echo',
+            //fghijklmnopqrstuvwxyz
+        },
         total_playable_slots_count: 'Total playable slots count',
         side_playable_slots_count: `\n{side} side has {playable_slots} playable slots\n`,
         ace_isMedic: {
