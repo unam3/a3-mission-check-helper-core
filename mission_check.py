@@ -48,7 +48,7 @@ def getMissionFilesList(path, devnull):
 
     return None if (not out) else map(
         lambda fullpath: fullpath.split(path + '/')[1],
-        out.decode('utf-8').splitlines()
+        out.decode('utf-8', 'replace').splitlines()
     )
 
 
