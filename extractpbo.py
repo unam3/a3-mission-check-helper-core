@@ -41,10 +41,10 @@ def extract_pbo(path_to_uploaded_file):
         raise ExtractpboError('Wrong or corrupted file.')
 
 
-    extractpbo_output_strings = extractpbo_output.split('\n')
+    extractpbo_output_strings = extractpbo_output.split('\n\n')
 
-    print [extractpbo_output_strings, len(extractpbo_output_strings), extractpbo_output_strings]
+    print [len(extractpbo_output_strings), extractpbo_output_strings]
 
-    if (len(extractpbo_output_strings) > 1 and extractpbo_output_strings[-2] != "No Error(s)"):
+    if (len(extractpbo_output_strings) > 1 and extractpbo_output_strings[-1] != 'No Error(s)\n'):
 
         raise ExtractpboError(extractpbo_output)
