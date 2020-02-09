@@ -4,9 +4,7 @@
 from __future__ import unicode_literals
 
 
-def was_mission_binarized(path_to_uploaded_file):
-
-    mission_sqm_path = ''.join([path_to_uploaded_file[:-4], '/mission.sqm'])
+def was_mission_binarized(mission_sqm_path):
 
     reference_line_part = '//DeRap: wog_'
 
