@@ -57,7 +57,7 @@ ru: {
         wrong_filename: 'Неверное имя файла. Сравните с примером: wog_160_wog_best_mission_10.Takistan.pbo',
         extraction_error: 'Ошибка распаковки pbo.',
 
-        too_many_slots: 'Число слотов на миссии не должно превышать 190.',
+        too_many_slots: 'Число слотов на миссии не должно превышать 210.',
 
         not_playable_unit: 'Неиграбельный юнит.',
         unallowed_path_to_equipment_script: 'Недопукстимый путь к скрипту снаряжения. Разрешены только буквы, числа и "\", "-", ".".',

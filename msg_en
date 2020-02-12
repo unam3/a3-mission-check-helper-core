@@ -58,7 +58,7 @@ en: {
         wrong_filename: 'Incorrect filename. Compare with example: wog_160_wog_best_mission_10.Takistan.pbo',
         extraction_error: 'Pbo extraction error.',
 
-        too_many_slots: 'The number of slots on missions should not exceed 190.',
+        too_many_slots: 'The number of slots on mission should not exceed 210.',
 
         not_playable_unit: 'this unit is not playable.',
         unallowed_path_to_equipment_script: 'Unallowed path to equipment script. Only alphabetical, numerical characters, "\", "-", "." are ok.',
