@@ -444,7 +444,7 @@ def check(path_to_mission_folder):
                         if (len(class_path) == 3 and class_path[1] == 'Category1' and class_path[2] == 'Attribute0'
                             and attr_name == 'property' and stripped_attr_value != 'EnableTargetDebug'):
 
-                                check_results['mission_attrs']['w_enable_target_debugging'] = True
+                                check_results['mission_attrs']['enable_target_debugging'] = True
 
                     elif (class_path[0] == str('Mission')):
 
