@@ -48,10 +48,8 @@ en: {
         fuel: 'fuel',
     },
     warnings: {
-        has_no_personal_radio: 'has no personal radio', 
-        has_unit_without_personal_radio: 'There is at least one unit without personal radio.',
-        has_group_leader_without_lrr: 'Has at least one squad leader without long range radio.',
-        has_no_lrr: 'has no long range radio',
+        has_no_personal_radio: 'Has no personal radio.', 
+        group_leader_without_lrr: 'Has no long range radio.',
         has_description_ext: 'mission has description.ext',
         unsupported_equipment_init: ' — this init is unsupported.',
     },

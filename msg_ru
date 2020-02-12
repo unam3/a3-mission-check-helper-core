@@ -47,10 +47,8 @@ ru: {
         fuel: 'Заправлен на',
     },
     warnings: {
-        has_no_personal_radio: 'Не выдается КВ',
-        has_unit_without_personal_radio: 'Имеется юнит без КВ.',
-        has_group_leader_without_lrr: 'Имеется КО без ДВ.',
-        has_no_lrr: 'Не выдается ДВ.',
+        has_no_personal_radio: 'Не выдается КВ.',
+        group_leader_without_lrr: 'Не выдается ДВ.',
         has_description_ext: 'В миссии есть description.ext',
         unsupported_equipment_init: ' — неподдерживаемый инит снаряжения.',
     },

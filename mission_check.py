@@ -890,14 +890,10 @@ def check(path_to_mission_folder):
 
                                     unique_init_attrs['group_leader_without_lrr'] = True
 
-                                    check_results['warnings']['has_group_leader_without_lrr'] = True
-
 
                             if has_personal_radio_in_init(path_to_init, devnull):
                                 
                                 unique_init_attrs['has_no_radio'] = True
-
-                                check_results['warnings']['has_unit_without_personal_radio'] = True
 
 
                             try:
