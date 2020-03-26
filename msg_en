@@ -33,6 +33,7 @@ en: {
             '0.0': 'Regular unit medical abillities',
             '1.0': 'Regular medic',
             '2.0': 'Doctor',
+            unusual_value: 'Unusual "ace_isMedic" attribute value: ',
         },
         ace_isEngineer: {
             '0.0': 'Unit has no engineer abillities',
